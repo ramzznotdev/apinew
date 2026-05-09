@@ -23,6 +23,8 @@ module.exports = [
                 let qrString = '';
                 let qrUrl = '';
                 let paymentData = null;
+                let feeAmount = 0;
+                let totalPayment = Number(amount);
 
                 // Panggil Pakasir API
                 try {
@@ -41,30 +43,24 @@ module.exports = [
                             }
                         );
 
-                        console.log('Pakasir Response:', JSON.stringify(qrRes.data));
-
-                        // Cek struktur response Pakasir
+                        // Cek response Pakasir (langsung ke payment, BUKAN success)
                         if (qrRes.data && qrRes.data.payment) {
                             paymentData = qrRes.data.payment;
                             qrString = paymentData.payment_number || '';
+                            feeAmount = paymentData.fee || 0;
+                            totalPayment = paymentData.total_payment || Number(amount);
                             
-                            // Generate QR URL dari string
                             if (qrString) {
                                 qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(qrString)}`;
                             }
-                        } else if (qrRes.data && qrRes.data.success) {
-                            // Fallback kalau response beda
-                            qrString = qrRes.data.data?.qr_string || qrRes.data.data?.payment_number || '';
-                            qrUrl = qrRes.data.data?.qr_url || '';
                         }
                     }
                 } catch (e) {
                     console.error('Pakasir Error:', e.response?.data || e.message);
-                    // Lanjut tanpa QR, nanti di-generate ulang
                 }
 
-                // Fallback QR mock kalau gagal
-                if (!qrUrl && !qrString) {
+                // Fallback kalau gagal
+                if (!qrUrl) {
                     qrString = `QRIS-${orderId}`;
                     qrUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${orderId}`;
                 }
@@ -75,6 +71,8 @@ module.exports = [
                     id: orderId,
                     product,
                     amount: Number(amount),
+                    fee: feeAmount,
+                    total_payment: totalPayment,
                     email_target,
                     nama_target: nama_target || '-',
                     status: 'pending',
@@ -95,15 +93,16 @@ module.exports = [
                         order_id: orderId,
                         product,
                         amount: Number(amount),
+                        fee: feeAmount,
+                        total_payment: totalPayment,
                         qr_url: qrUrl,
                         qr_string: qrString,
                         status: 'pending',
-                        expires_in: 900 // 15 menit
+                        expires_in: 900
                     }
                 });
 
             } catch (err) {
-                console.error('Create Order Error:', err);
                 res.status(500).json({
                     error: true,
                     message: 'Gagal membuat order',
@@ -122,31 +121,13 @@ module.exports = [
         async run(req, res) {
             try {
                 const { order_id } = req.query;
-                if (!order_id) {
-                    return res.status(400).json({ error: true, message: 'order_id wajib diisi' });
-                }
+                if (!order_id) return res.status(400).json({ error: true, message: 'order_id wajib' });
 
                 const orders = global.readDB('orders.json');
                 const order = orders.find(o => o.id === order_id);
+                if (!order) return res.status(404).json({ error: true, message: 'Order tidak ditemukan' });
 
-                if (!order) {
-                    return res.status(404).json({ error: true, message: 'Order tidak ditemukan' });
-                }
-
-                // Return data order
-                res.json({
-                    success: true,
-                    data: {
-                        order_id: order.id,
-                        product: order.product,
-                        amount: order.amount,
-                        status: order.status,
-                        qr_url: order.qr_url,
-                        created_at: order.created_at,
-                        paid_at: order.paid_at
-                    }
-                });
-
+                res.json({ success: true, data: order });
             } catch (err) {
                 res.status(500).json({ error: true, message: err.message });
             }
@@ -155,29 +136,25 @@ module.exports = [
 
     {
         name: "List Orders",
-        desc: "Lihat semua order (bisa filter status)",
+        desc: "Lihat semua order (filter status, pagination)",
         category: "Order",
-        path: "/api/order/list?apikey=&status=",
+        path: "/api/order/list?apikey=&status=&page=&limit=",
 
         async run(req, res) {
             try {
-                const { status, limit, page } = req.query;
+                const { status, page, limit } = req.query;
                 let orders = global.readDB('orders.json');
 
-                // Filter status
                 if (status && ['pending', 'paid', 'expired', 'cancelled'].includes(status)) {
                     orders = orders.filter(o => o.status === status);
                 }
 
-                // Sort by newest first
                 orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
 
-                // Pagination
-                const total = orders.length;
                 const pageNum = parseInt(page) || 1;
                 const limitNum = parseInt(limit) || 50;
-                const start = (pageNum - 1) * limitNum;
-                const paginatedOrders = orders.slice(start, start + limitNum);
+                const total = orders.length;
+                const paginated = orders.slice((pageNum - 1) * limitNum, pageNum * limitNum);
 
                 res.json({
                     success: true,
@@ -186,10 +163,9 @@ module.exports = [
                         page: pageNum,
                         limit: limitNum,
                         total_pages: Math.ceil(total / limitNum),
-                        orders: paginatedOrders
+                        orders: paginated
                     }
                 });
-
             } catch (err) {
                 res.status(500).json({ error: true, message: err.message });
             }
@@ -198,40 +174,25 @@ module.exports = [
 
     {
         name: "Cancel Order",
-        desc: "Batalkan order yang masih pending",
+        desc: "Batalkan order pending",
         category: "Order",
         path: "/api/order/cancel?apikey=&order_id=",
 
         async run(req, res) {
             try {
                 const { order_id } = req.query;
-                if (!order_id) {
-                    return res.status(400).json({ error: true, message: 'order_id wajib diisi' });
-                }
+                if (!order_id) return res.status(400).json({ error: true, message: 'order_id wajib' });
 
                 const orders = global.readDB('orders.json');
                 const idx = orders.findIndex(o => o.id === order_id);
-
-                if (idx === -1) {
-                    return res.status(404).json({ error: true, message: 'Order tidak ditemukan' });
-                }
-
-                if (orders[idx].status !== 'pending') {
-                    return res.status(400).json({
-                        error: true,
-                        message: `Order sudah ${orders[idx].status}, tidak bisa dibatalkan`
-                    });
-                }
+                if (idx === -1) return res.status(404).json({ error: true, message: 'Order tidak ditemukan' });
+                if (orders[idx].status !== 'pending') return res.status(400).json({ error: true, message: `Order sudah ${orders[idx].status}` });
 
                 orders[idx].status = 'cancelled';
                 orders[idx].cancelled_at = new Date().toISOString();
                 global.writeDB('orders.json', orders);
 
-                res.json({
-                    success: true,
-                    message: `Order #${order_id} berhasil dibatalkan`
-                });
-
+                res.json({ success: true, message: `Order #${order_id} dibatalkan` });
             } catch (err) {
                 res.status(500).json({ error: true, message: err.message });
             }
