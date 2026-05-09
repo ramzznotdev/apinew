@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RAMZZ API DOJO 侍 — Payment Gateway</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <style>
+        :root {
+            --bg-primary: #0a0a0a;
+            --bg-secondary: #111111;
+            --bg-card: #1a1a1a;
+            --red: #dc2626;
+            --red-dark: #991b1b;
+            --gold: #f59e0b;
+            --gold-dark: #b45309;
+            --text-primary: #ffffff;
+            --text-secondary: #a3a3a3;
+            --border: #272727;
+            --border-hover: #dc262640;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ==================== BACKGROUND SAMURAI ==================== */
+        .bg-samurai {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background-image: url('https://images.unsplash.com/photo-1607604276583-eef5f160f1e2?w=1920&q=80');
+            background-size: cover;
+            background-position: center 20%;
+            background-repeat: no-repeat;
+            opacity: 0.08;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, 
+                rgba(10,10,10,0.3) 0%, 
+                rgba(10,10,10,0.7) 50%, 
+                rgba(10,10,10,0.95) 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* ==================== WAVE KANAGAWA ==================== */
+        .wave-divider {
+            position: relative;
+            width: 100%;
+            height: 80px;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .wave-divider svg {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+        }
+
+        /* ==================== CONTAINER ==================== */
+        .container {
+            position: relative;
+            z-index: 2;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* ==================== HEADER ==================== */
+        .header {
+            text-align: center;
+            padding: 60px 0 40px;
+            position: relative;
+        }
+
+        .header-torii {
+            font-size: 3rem;
+            margin-bottom: 10px;
+            animation: floatTorii 3s ease-in-out infinite;
+        }
+
+        @keyframes floatTorii {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .header-title {
+            font-family: 'Noto Serif JP', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #dc2626 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-size: 200% 200%;
+            animation: gradientShift 4s ease infinite;
+            margin-bottom: 8px;
+        }
+
+        @keyframes gradientShift {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        .header-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+            letter-spacing: 2px;
+        }
+
+        .header-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: var(--bg-card);
+            border: 1px solid var(--red-dark);
+            border-radius: 50px;
+            padding: 8px 20px;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: var(--red);
+        }
+
+        .header-badge .dot {
+            width: 8px;
+            height: 8px;
+            background: #22c55e;
+            border-radius: 50%;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
+            50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
+        }
+
+        /* ==================== STATS CARDS ==================== */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card:hover {
+            border-color: var(--red-dark);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(220,38,38,0.1);
+        }
+
+        .stat-card .stat-icon {
+            font-size: 2rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-card .stat-value {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--red);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 4px;
+        }
+
+        .stat-card::after {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(220,38,38,0.05) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .stat-card:hover::after {
+            opacity: 1;
+        }
+
+        /* ==================== SEARCH BAR ==================== */
+        .search-bar {
+            margin-bottom: 24px;
+        }
+
+        .search-bar input {
+            width: 100%;
+            padding: 14px 20px;
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-bar input:focus {
+            outline: none;
+            border-color: var(--red-dark);
+            box-shadow: 0 0 20px rgba(220,38,38,0.15);
+        }
+
+        .search-bar input::placeholder {
+            color: #525252;
+        }
+
+        /* ==================== CATEGORY SECTION ==================== */
+        .category-section {
+            margin-bottom: 20px;
+        }
+
+        .category-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 16px 20px;
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+
+        .category-header:hover {
+            border-color: var(--red-dark);
+            background: #1f1f1f;
+        }
+
+        .category-header .category-icon {
+            font-size: 1.5rem;
+        }
+
+        .category-header .category-name {
+            font-weight: 700;
+            font-size: 1rem;
+            flex: 1;
+        }
+
+        .category-header .category-count {
+            background: var(--red-dark);
+            color: white;
+            padding: 3px 10px;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .category-header .category-arrow {
+            transition: transform 0.3s ease;
+            color: var(--text-secondary);
+        }
+
+        .category-header.open .category-arrow {
+            transform: rotate(180deg);
+        }
+
+        /* ==================== ENDPOINT CARDS ==================== */
+        .category-endpoints {
+            display: none;
+            padding: 8px 0 0 0;
+        }
+
+        .category-endpoints.show {
+            display: block;
+        }
+
+        .endpoint-card {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .endpoint-card:hover {
+            border-color: var(--red-dark);
+            transform: translateX(8px);
+            box-shadow: 0 0 20px rgba(220,38,38,0.08);
+        }
+
+        .endpoint-card .char-img {
+            width: 50px;
+            height: 50px;
+            border-radius: 12px;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--border);
+            transition: border-color 0.3s;
+        }
+
+        .endpoint-card:hover .char-img {
+            border-color: var(--red);
+        }
+
+        .endpoint-method {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            flex-shrink: 0;
+        }
+
+        .method-get {
+            background: #22c55e20;
+            color: #22c55e;
+            border: 1px solid #22c55e40;
+        }
+
+        .method-post {
+            background: #3b82f620;
+            color: #3b82f6;
+            border: 1px solid #3b82f640;
+        }
+
+        .endpoint-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .endpoint-path {
+            font-family: 'JetBrains Mono', 'Courier New', monospace;
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            word-break: break-all;
+        }
+
+        .endpoint-desc {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .endpoint-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+        }
+
+        .btn-action {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            background: var(--bg-card);
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-action:hover {
+            border-color: var(--red-dark);
+            color: var(--red);
+            background: #1f1f1f;
+        }
+
+        .btn-test {
+            background: var(--red);
+            color: white;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-test:hover {
+            background: var(--red-dark);
+            color: white;
+        }
+
+        /* ==================== API TESTER MODAL ==================== */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.85);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+        }
+
+        .modal {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 700px;
+            width: 100%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .modal-title {
+            font-size: 1.2rem;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.5rem;
+            cursor: pointer;
+            transition: color 0.3s;
+        }
+
+        .modal-close:hover {
+            color: var(--red);
+        }
+
+        .modal .param-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+
+        .modal .param-row input {
+            flex: 1;
+            padding: 10px 14px;
+            background: var(--bg-secondary);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
+
+        .modal .param-row input:focus {
+            outline: none;
+            border-color: var(--red-dark);
+        }
+
+        .modal .response-area {
+            background: #000;
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            max-height: 300px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            color: #22c55e;
+        }
+
+        /* ==================== FOOTER ==================== */
+        .footer {
+            text-align: center;
+            padding: 40px 0;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-divider {
+            font-size: 2rem;
+            margin-bottom: 16px;
+            color: var(--red);
+        }
+
+        .footer-text {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+        }
+
+        .footer-text a {
+            color: var(--red);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        /* ==================== SHURIKEN LOADER ==================== */
+        .shuriken-loader {
+            display: none;
+            width: 40px;
+            height: 40px;
+            margin: 20px auto;
+            animation: shurikenSpin 0.8s linear infinite;
+            font-size: 2rem;
+        }
+
+        .shuriken-loader.active {
+            display: block;
+        }
+
+        @keyframes shurikenSpin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+
+        /* ==================== TOAST ==================== */
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #22c55e;
+            color: #000;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .toast.show {
+            transform: translateX(-50%) translateY(0);
+        }
+
+        /* ==================== RESPONSIVE ==================== */
+        @media (max-width: 768px) {
+            .header-title {
+                font-size: 1.8rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: 10px;
+            }
+            
+            .stat-card {
+                padding: 14px;
+            }
+            
+            .stat-card .stat-value {
+                font-size: 1.5rem;
+            }
+            
+            .endpoint-card {
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 14px;
+            }
+            
+            .endpoint-card .char-img {
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+            }
+            
+            .endpoint-actions {
+                width: 100%;
+                justify-content: flex-end;
+            }
+            
+            .modal {
+                padding: 20px;
+            }
+            
+            .modal .param-row {
+                flex-direction: column;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .header-torii {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==================== BACKGROUND ==================== -->
+    <div class="bg-samurai"></div>
+    <div class="bg-overlay"></div>
+
+    <!-- ==================== CONTAINER ==================== -->
+    <div class="container">
+
+        <!-- HEADER -->
+        <header class="header">
+            <div class="header-torii">⛩️</div>
+            <h1 class="header-title">RAMZZ API DOJO</h1>
+            <p class="header-subtitle">侍 Payment Gateway & Order System</p>
+            <div class="header-badge">
+                <span class="dot"></span>
+                <span id="apiStatus">API Ready</span>
+            </div>
+        </header>
+
+        <!-- STATS CARDS -->
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">⚔️</div>
+                <div class="stat-value" id="totalEndpoints">-</div>
+                <div class="stat-label">Total Endpoints</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📦</div>
+                <div class="stat-value" id="totalCategories">-</div>
+                <div class="stat-label">Categories</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🟢</div>
+                <div class="stat-value">Online</div>
+                <div class="stat-label" id="apiVersion">v1.0.0</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="uptimeDisplay">-</div>
+                <div class="stat-label">Uptime</div>
+            </div>
+        </div>
+
+        <!-- SEARCH BAR -->
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Cari endpoint... (contoh: order, payment, webhook)" oninput="filterEndpoints()">
+        </div>
+
+        <!-- SHURIKEN LOADER -->
+        <div class="shuriken-loader" id="loader">🎯</div>
+
+        <!-- ENDPOINTS CONTAINER -->
+        <div id="endpointsContainer"></div>
+
+        <!-- FOOTER -->
+        <footer class="footer">
+            <div class="footer-divider">⚔️⛩️⚔️</div>
+            <p class="footer-text">
+                © 2024 <a href="#">RAMZZ HOSTING</a> — Samurai API Dojo 侍
+            </p>
+        </footer>
+
+    </div>
+
+    <!-- ==================== API TESTER MODAL ==================== -->
+    <div class="modal-overlay" id="testerModal">
+        <div class="modal">
+            <div class="modal-header">
+                <span class="modal-title">🧪 API Tester</span>
+                <button class="modal-close" onclick="closeTester()">✕</button>
+            </div>
+            <div id="testerParams"></div>
+            <button class="btn-action btn-test" onclick="executeTest()" style="width:100%;padding:12px;margin-top:8px;">
+                ⚡ Execute
+            </button>
+            <div class="response-area" id="testerResponse">// Response akan muncul disini...</div>
+        </div>
+    </div>
+
+    <!-- ==================== TOAST ==================== -->
+    <div class="toast" id="toast">📋 URL Disalin!</div>
+
+    <!-- ==================== SCRIPTS ==================== -->
+    <script>
+        let allEndpoints = {};
+        let currentTestUrl = '';
+        let currentTestMethod = 'GET';
+
+        // ==================== FETCH ENDPOINTS ====================
+        async function loadEndpoints() {
+            const loader = document.getElementById('loader');
+            loader.classList.add('active');
+            
+            try {
+                const res = await fetch('/endpoints');
+                const data = await res.json();
+                
+                allEndpoints = data.categories || data;
+                
+                document.getElementById('totalEndpoints').textContent = data.total_endpoints || Object.values(allEndpoints).flat().length;
+                document.getElementById('totalCategories').textContent = data.total_categories || Object.keys(allEndpoints).length;
+                
+                if (data.api) {
+                    document.getElementById('apiVersion').textContent = data.api;
+                }
+                
+                fetchUptime();
+                renderEndpoints(allEndpoints);
+                
+            } catch (err) {
+                console.error('Failed to load endpoints:', err);
+                document.getElementById('endpointsContainer').innerHTML = `
+                    <div style="text-align:center;padding:40px;color:#dc2626;">
+                        ⚠️ Gagal memuat endpoints. Pastikan server berjalan.
+                    </div>
+                `;
+            } finally {
+                loader.classList.remove('active');
+            }
+        }
+
+        // ==================== FETCH UPTIME ====================
+        async function fetchUptime() {
+            try {
+                const res = await fetch('/health');
+                const data = await res.json();
+                const uptime = data.uptime || 0;
+                const hours = Math.floor(uptime / 3600);
+                const mins = Math.floor((uptime % 3600) / 60);
+                document.getElementById('uptimeDisplay').textContent = `${hours}h ${mins}m`;
+            } catch (err) {
+                document.getElementById('uptimeDisplay').textContent = 'N/A';
+            }
+        }
+
+        // ==================== RENDER ENDPOINTS ====================
+        function renderEndpoints(categories) {
+            const container = document.getElementById('endpointsContainer');
+            container.innerHTML = '';
+
+            const categoryIcons = {
+                'Order': '📦',
+                'Payment': '💳',
+                'Webhook': '🔗',
+                'Notification': '📧',
+                'Downloader': '⬇️',
+                'Search': '🔍',
+                'Tools': '🛠️',
+                'Stalker': '👁️',
+                'Cloudflare': '☁️',
+                'Openai': '🤖',
+                'Imagecreator': '🎨',
+                'Orderkuota': '📱'
+            };
+
+            const categoryChars = {
+                'Order': 'https://i.pinimg.com/236x/1a/2b/3c/zoro-wano-icon.jpg',
+                'Payment': 'https://i.pinimg.com/236x/tanjiro-water-icon.jpg',
+                'Webhook': 'https://i.pinimg.com/236x/itachi-icon.jpg',
+                'Notification': 'https://i.pinimg.com/236x/levi-icon.jpg'
+            };
+
+            Object.keys(categories).sort().forEach((category, idx) => {
+                const endpoints = categories[category];
+                const icon = categoryIcons[category] || '📋';
+                const charImg = categoryChars[category] || 
+                    `https://api.waifu.pics/sfw/samurai?random=${idx}`;
+
+                const section = document.createElement('div');
+                section.className = 'category-section';
+                section.innerHTML = `
+                    <div class="category-header" onclick="toggleCategory(this)">
+                        <span class="category-icon">${icon}</span>
+                        <span class="category-name">${category}</span>
+                        <span class="category-count">${endpoints.length}</span>
+                        <i class="fas fa-chevron-down category-arrow"></i>
+                    </div>
+                    <div class="category-endpoints ${idx === 0 ? 'show' : ''}">
+                        ${endpoints.map((ep, i) => {
+                            const method = ep.method || 'GET';
+                            const methodClass = method === 'POST' ? 'method-post' : 'method-get';
+                            const charPic = charImg || `https://api.waifu.pics/sfw/samurai?random=${idx}${i}`;
+                            
+                            return `
+                                <div class="endpoint-card" data-category="${category}" data-name="${ep.name.toLowerCase()}" data-desc="${ep.desc.toLowerCase()}">
+                                    <img src="${charPic}" 
+                                         class="char-img" 
+                                         alt="${ep.name}"
+                                         onerror="this.src='https://api.waifu.pics/sfw/samurai?random=${Date.now()}${i}'">
+                                    <span class="endpoint-method ${methodClass}">${method}</span>
+                                    <div class="endpoint-info">
+                                        <div class="endpoint-path">${ep.path}</div>
+                                        <div class="endpoint-desc">${ep.desc}</div>
+                                    </div>
+                                    <div class="endpoint-actions">
+                                        <button class="btn-action" onclick="copyURL('${escapeHtml(ep.path)}')" title="Copy URL">
+                                            📋
+                                        </button>
+                                        <button class="btn-action btn-test" onclick="openTester('${escapeHtml(ep.path)}', '${method}')">
+                                            🧪 Test
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        }).join('')}
+                    </div>
+                `;
+                container.appendChild(section);
+            });
+        }
+
+        // ==================== TOGGLE CATEGORY ====================
+        function toggleCategory(header) {
+            const endpoints = header.nextElementSibling;
+            const isOpen = endpoints.classList.contains('show');
+            
+            if (isOpen) {
+                endpoints.classList.remove('show');
+                header.classList.remove('open');
+            } else {
+                endpoints.classList.add('show');
+                header.classList.add('open');
+            }
+        }
+
+        // ==================== COPY URL ====================
+        function copyURL(path) {
+            const fullUrl = window.location.origin + path.split('?')[0];
+            navigator.clipboard.writeText(fullUrl).then(() => {
+                showToast('📋 URL Disalin!');
+            });
+        }
+
+        // ==================== FILTER ENDPOINTS ====================
+        function filterEndpoints() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.endpoint-card');
+            const sections = document.querySelectorAll('.category-section');
+
+            sections.forEach(section => {
+                let hasVisible = false;
+                const sectionCards = section.querySelectorAll('.endpoint-card');
+                
+                sectionCards.forEach(card => {
+                    const name = card.dataset.name || '';
+                    const desc = card.dataset.desc || '';
+                    const path = card.querySelector('.endpoint-path')?.textContent.toLowerCase() || '';
+                    
+                    if (!query || name.includes(query) || desc.includes(query) || path.includes(query)) {
+                        card.style.display = 'flex';
+                        hasVisible = true;
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+                
+                section.style.display = hasVisible || !query ? 'block' : 'none';
+            });
+        }
+
+        // ==================== API TESTER ====================
+        function openTester(path, method) {
+            currentTestUrl = path;
+            currentTestMethod = method;
+            
+            // Parse parameter dari path
+            const [base, queryString] = path.split('?');
+            const params = queryString ? queryString.split('&') : [];
+            
+            let paramsHtml = `
+                <label style="font-size:0.8rem;color:#a3a3a3;">URL: ${base}</label>
+                <input type="text" id="testBaseUrl" value="${base}" style="width:100%;margin:8px 0;padding:10px;background:#111;border:1px solid #272727;border-radius:8px;color:#fff;">
+            `;
+            
+            params.forEach(param => {
+                const [key, value] = param.split('=');
+                const isApikey = key === 'apikey';
+                paramsHtml += `
+                    <div class="param-row">
+                        <input type="text" value="${key}" readonly style="width:120px;flex-shrink:0;">
+                        <input type="text" class="param-value" data-key="${key}" 
+                               value="${isApikey ? 'YOUR_API_KEY' : ''}" 
+                               placeholder="${key}">
+                    </div>
+                `;
+            });
+            
+            document.getElementById('testerParams').innerHTML = paramsHtml;
+            document.getElementById('testerResponse').textContent = '// Response akan muncul disini...';
+            document.getElementById('testerModal').classList.add('active');
+        }
+
+        function closeTester() {
+            document.getElementById('testerModal').classList.remove('active');
+        }
+
+        async function executeTest() {
+            const baseUrl = document.getElementById('testBaseUrl')?.value || currentTestUrl.split('?')[0];
+            const paramInputs = document.querySelectorAll('.param-value');
+            
+            let queryParams = [];
+            paramInputs.forEach(input => {
+                const key = input.dataset.key;
+                const value = input.value;
+                if (value && value !== 'YOUR_API_KEY') {
+                    queryParams.push(`${key}=${encodeURIComponent(value)}`);
+                }
+            });
+            
+            const fullUrl = queryParams.length > 0 
+                ? `${baseUrl}?${queryParams.join('&')}` 
+                : baseUrl;
+            
+            const responseArea = document.getElementById('testerResponse');
+            responseArea.textContent = '⏳ Loading...';
+            
+            try {
+                const res = await fetch(fullUrl, {
+                    method: currentTestMethod,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'x-api-key': document.querySelector('[data-key="apikey"]')?.value || ''
+                    }
+                });
+                
+                const data = await res.json();
+                responseArea.textContent = JSON.stringify(data, null, 2);
+                responseArea.style.color = res.ok ? '#22c55e' : '#ef4444';
+                
+            } catch (err) {
+                responseArea.textContent = `❌ Error: ${err.message}`;
+                responseArea.style.color = '#ef4444';
+            }
+        }
+
+        // ==================== TOAST ====================
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 2000);
+        }
+
+        // ==================== CLOSE MODAL ON OVERLAY CLICK ====================
+        document.getElementById('testerModal').addEventListener('click', function(e) {
+            if (e.target === this) closeTester();
+        });
+
+        // ==================== KEYBOARD SHORTCUTS ====================
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeTester();
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                document.getElementById('searchInput').focus();
+            }
+        });
+
+        // ==================== HELPER ====================
+        function escapeHtml(str) {
+            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        }
+
+        // ==================== INIT ====================
+        document.addEventListener('DOMContentLoaded', () => {
+            loadEndpoints();
+        });
+    </script>
+</body>
+</html>
