@@ -20,7 +20,7 @@ module.exports = [
                 let qrUrl = '';
 
                 try {
-                    const qrRes = await axios.post('https://app.pakasir.com/api/qris/create', {
+                    const qrRes = await axios.post('https://app.pakasir.com/api/transactioncreate/qris', {
                         project: process.env.PAKASIR_PROJECT || '',
                         order_id: orderId,
                         amount: Number(amount),
