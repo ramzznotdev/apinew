@@ -3,29 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RAMZZ API DOJO 侍 — Payment Gateway</title>
+    <title>RAMZZ HOSTING — API Dashboard</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Serif+JP:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --bg: #030303;
+            --bg: #050505;
             --surface: #0a0a0a;
             --surface2: #111111;
             --surface3: #1a1a1a;
             --border: #1f1f1f;
             --border-hover: #2a2a2a;
-            --red: #dc2626;
-            --red-glow: #ef4444;
             --gold: #f59e0b;
-            --gold-glow: #fbbf24;
+            --gold-dim: #b45309;
             --text: #fafafa;
             --text2: #a1a1aa;
             --text3: #71717a;
             --green: #22c55e;
+            --red: #ef4444;
             --blue: #3b82f6;
         }
 
@@ -36,280 +35,265 @@
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
-            overflow-x: hidden;
             line-height: 1.6;
         }
 
-        /* ============ PARTICLES ============ */
-        #particles {
+        /* Grid Background */
+        body::before {
+            content: '';
             position: fixed;
             inset: 0;
+            background-image: 
+                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+            background-size: 50px 50px;
             pointer-events: none;
             z-index: 0;
         }
 
-        /* ============ MAIN CONTAINER ============ */
         .container {
             position: relative;
-            z-index: 2;
-            max-width: 960px;
+            z-index: 1;
+            max-width: 900px;
             margin: 0 auto;
-            padding: 0 24px;
+            padding: 0 20px;
         }
 
         /* ============ HEADER ============ */
         .header {
             text-align: center;
-            padding: 64px 0 40px;
+            padding: 60px 0 30px;
         }
 
-        .header-icon {
-            font-size: 3.5rem;
-            margin-bottom: 12px;
-            filter: drop-shadow(0 0 20px rgba(220,38,38,0.4));
-            animation: float 3s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+            border-radius: 14px;
+            font-weight: 900;
+            font-size: 1.4rem;
+            color: #000;
+            margin-bottom: 16px;
         }
 
         .header h1 {
-            font-family: 'Noto Serif JP', serif;
-            font-size: clamp(2rem, 5vw, 3.2rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 40%, #dc2626 80%);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            -webkit-text-fill-color: transparent;
-            animation: gradientShift 4s ease infinite;
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 800;
             letter-spacing: -1px;
+            margin-bottom: 6px;
         }
 
-        @keyframes gradientShift {
-            0%, 100% { background-position: 0% center; }
-            50% { background-position: 100% center; }
+        .header h1 .gold {
+            color: var(--gold);
         }
 
-        .header .subtitle {
+        .typing-wrap {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
             color: var(--text3);
             font-size: 0.9rem;
-            letter-spacing: 3px;
-            text-transform: uppercase;
-            margin-top: 8px;
+            font-weight: 400;
+        }
+
+        #typingText {
+            color: var(--gold);
+            font-weight: 500;
+        }
+
+        .cursor {
+            display: inline-block;
+            width: 2px;
+            height: 16px;
+            background: var(--gold);
+            animation: blink 0.8s infinite;
+            margin-left: 2px;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0; }
         }
 
         .status-badge {
             display: inline-flex;
             align-items: center;
-            gap: 8px;
-            background: rgba(220,38,38,0.08);
-            border: 1px solid rgba(220,38,38,0.2);
+            gap: 6px;
+            background: rgba(245,158,11,0.08);
+            border: 1px solid rgba(245,158,11,0.15);
             border-radius: 50px;
-            padding: 8px 20px;
-            margin-top: 16px;
-            font-size: 0.8rem;
-            color: var(--red-glow);
+            padding: 6px 16px;
+            font-size: 0.75rem;
+            color: var(--gold);
+            margin-top: 12px;
             font-weight: 500;
         }
 
         .status-dot {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             background: var(--green);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
-            50% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
+            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+            50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
         }
 
         /* ============ STATS ============ */
         .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 12px;
-            margin-bottom: 32px;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 10px;
+            margin-bottom: 24px;
         }
 
         .stat-card {
             background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 20px;
+            border-radius: 14px;
+            padding: 18px;
             text-align: center;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .stat-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 2px;
-            background: linear-gradient(90deg, transparent, var(--red), transparent);
-            opacity: 0;
-            transition: opacity 0.3s;
+            transition: all 0.3s;
         }
 
         .stat-card:hover {
-            border-color: var(--border-hover);
+            border-color: rgba(245,158,11,0.25);
             transform: translateY(-2px);
-            box-shadow: 0 8px 32px rgba(220,38,38,0.06);
         }
 
-        .stat-card:hover::before {
-            opacity: 1;
-        }
-
-        .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
-        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text); }
-        .stat-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+        .stat-icon { font-size: 1.4rem; margin-bottom: 6px; }
+        .stat-value { font-size: 1.6rem; font-weight: 700; }
+        .stat-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
 
         /* ============ SEARCH ============ */
         .search-wrap {
-            margin-bottom: 24px;
+            margin-bottom: 20px;
         }
 
         .search-wrap input {
             width: 100%;
-            padding: 14px 20px;
+            padding: 12px 18px;
             background: var(--surface2);
             border: 2px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             color: var(--text);
             font-size: 0.9rem;
             font-family: 'Inter', sans-serif;
-            transition: all 0.3s;
             outline: none;
+            transition: all 0.3s;
         }
 
         .search-wrap input:focus {
-            border-color: rgba(220,38,38,0.4);
-            box-shadow: 0 0 24px rgba(220,38,38,0.06);
+            border-color: rgba(245,158,11,0.35);
+            box-shadow: 0 0 20px rgba(245,158,11,0.04);
         }
 
         .search-wrap input::placeholder {
             color: var(--text3);
         }
 
-        /* ============ SHURIKEN LOADER ============ */
+        /* ============ LOADER ============ */
         .loader {
             display: none;
             text-align: center;
             padding: 40px;
         }
         .loader.active { display: block; }
-        .loader .shuriken {
-            font-size: 2.5rem;
-            animation: spin 0.8s linear infinite;
-            display: inline-block;
+        .loader .spinner {
+            width: 32px;
+            height: 32px;
+            border: 3px solid var(--border);
+            border-top-color: var(--gold);
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+            margin: 0 auto;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
 
         /* ============ CATEGORY ============ */
         .category {
-            margin-bottom: 12px;
+            margin-bottom: 10px;
         }
 
-        .category-header {
+        .cat-header {
             display: flex;
             align-items: center;
-            gap: 12px;
-            padding: 16px 20px;
+            gap: 10px;
+            padding: 14px 18px;
             background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 14px;
+            border-radius: 12px;
             cursor: pointer;
             user-select: none;
             transition: all 0.3s;
         }
 
-        .category-header:hover {
+        .cat-header:hover {
             border-color: var(--border-hover);
             background: var(--surface3);
         }
 
-        .category-header.open {
-            border-color: rgba(220,38,38,0.25);
-            border-radius: 14px 14px 0 0;
+        .cat-header.open {
+            border-color: rgba(245,158,11,0.25);
+            border-radius: 12px 12px 0 0;
         }
 
-        .cat-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .cat-icon { font-size: 1.2rem; flex-shrink: 0; }
         .cat-name { font-weight: 600; flex: 1; font-size: 0.9rem; }
         .cat-count {
-            background: rgba(220,38,38,0.12);
-            color: var(--red-glow);
+            background: rgba(245,158,11,0.1);
+            color: var(--gold);
             padding: 3px 10px;
             border-radius: 20px;
             font-size: 0.7rem;
             font-weight: 700;
         }
         .cat-arrow {
-            transition: transform 0.3s;
+            font-size: 0.65rem;
             color: var(--text3);
-            font-size: 0.7rem;
+            transition: transform 0.3s;
         }
-        .category-header.open .cat-arrow {
+        .cat-header.open .cat-arrow {
             transform: rotate(180deg);
         }
 
-        .category-body {
+        .cat-body {
             display: none;
-            border: 1px solid rgba(220,38,38,0.15);
+            border: 1px solid rgba(245,158,11,0.15);
             border-top: none;
-            border-radius: 0 0 14px 14px;
+            border-radius: 0 0 12px 12px;
             overflow: hidden;
         }
-        .category-body.open {
-            display: block;
-        }
+        .cat-body.open { display: block; }
 
         /* ============ ENDPOINT CARD ============ */
         .endpoint {
             display: flex;
             align-items: center;
-            gap: 14px;
-            padding: 14px 20px;
+            gap: 12px;
+            padding: 12px 18px;
             background: var(--surface);
             border-bottom: 1px solid var(--border);
-            transition: all 0.3s;
-            cursor: default;
+            transition: all 0.25s;
         }
 
         .endpoint:last-child { border-bottom: none; }
 
         .endpoint:hover {
             background: var(--surface2);
-            transform: translateX(6px);
-            box-shadow: inset 3px 0 0 var(--red);
-        }
-
-        .ep-char {
-            width: 42px;
-            height: 42px;
-            border-radius: 10px;
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 2px solid var(--border);
-            transition: border-color 0.3s;
-        }
-
-        .endpoint:hover .ep-char {
-            border-color: var(--red);
+            box-shadow: inset 3px 0 0 var(--gold);
         }
 
         .ep-method {
             padding: 4px 8px;
-            border-radius: 6px;
-            font-size: 0.65rem;
+            border-radius: 5px;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -319,55 +303,46 @@
         .method-post { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
 
         .ep-info { flex: 1; min-width: 0; }
+        .ep-name { font-size: 0.85rem; font-weight: 600; }
         .ep-path {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.78rem;
-            font-weight: 600;
-            word-break: break-all;
-            color: var(--text);
-        }
-        .ep-desc {
-            font-size: 0.7rem;
+            font-family: 'SF Mono', 'Cascadia Code', monospace;
+            font-size: 0.72rem;
             color: var(--text3);
-            margin-top: 2px;
+            word-break: break-all;
+            margin-top: 1px;
         }
 
-        .ep-actions {
-            display: flex;
-            gap: 6px;
-            flex-shrink: 0;
-        }
+        .ep-actions { display: flex; gap: 6px; flex-shrink: 0; }
 
         .btn {
-            padding: 7px 14px;
-            border-radius: 8px;
-            font-size: 0.75rem;
+            padding: 7px 12px;
+            border-radius: 7px;
+            font-size: 0.72rem;
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
             border: 1px solid var(--border);
             background: var(--surface2);
             color: var(--text2);
-            white-space: nowrap;
             font-family: 'Inter', sans-serif;
+            white-space: nowrap;
         }
 
         .btn:hover {
             border-color: var(--border-hover);
             color: var(--text);
-            background: var(--surface3);
         }
 
         .btn-test {
-            background: var(--red);
-            color: white;
+            background: var(--gold);
+            color: #000;
             border: none;
+            font-weight: 700;
         }
 
         .btn-test:hover {
-            background: #b91c1c;
-            color: white;
-            box-shadow: 0 4px 16px rgba(220,38,38,0.3);
+            background: #e5900a;
+            color: #000;
         }
 
         /* ============ MODAL ============ */
@@ -375,21 +350,21 @@
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.85);
-            z-index: 1000;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            backdrop-filter: blur(4px);
+            padding: 16px;
+            backdrop-filter: blur(3px);
         }
         .modal-overlay.active { display: flex; }
 
         .modal {
             background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 20px;
-            padding: 28px;
-            max-width: 650px;
+            border-radius: 18px;
+            padding: 24px;
+            max-width: 600px;
             width: 100%;
             max-height: 85vh;
             overflow-y: auto;
@@ -399,42 +374,41 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 18px;
         }
-        .modal-title { font-weight: 700; font-size: 1.1rem; }
+        .modal-title { font-weight: 700; font-size: 1rem; }
         .modal-close {
             background: none;
             border: none;
             color: var(--text3);
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             cursor: pointer;
-            transition: color 0.3s;
         }
         .modal-close:hover { color: var(--red); }
 
         .modal input {
             width: 100%;
-            padding: 10px 14px;
+            padding: 10px 12px;
             background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 10px;
+            border-radius: 8px;
             color: var(--text);
             font-family: 'Inter', sans-serif;
-            margin-bottom: 8px;
+            margin-bottom: 6px;
             outline: none;
-            transition: border-color 0.3s;
+            font-size: 0.85rem;
         }
-        .modal input:focus { border-color: var(--red); }
+        .modal input:focus { border-color: var(--gold); }
 
         .response-box {
             background: #000;
             border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px;
-            margin-top: 12px;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            max-height: 260px;
+            border-radius: 10px;
+            padding: 14px;
+            margin-top: 10px;
+            font-family: 'SF Mono', monospace;
+            font-size: 0.72rem;
+            max-height: 250px;
             overflow-y: auto;
             white-space: pre-wrap;
             color: var(--green);
@@ -443,9 +417,9 @@
         /* ============ TOAST ============ */
         .toast {
             position: fixed;
-            bottom: 24px;
+            bottom: 20px;
             left: 50%;
-            transform: translateX(-50%) translateY(120px);
+            transform: translateX(-50%) translateY(100px);
             background: #18181b;
             border: 1px solid var(--border);
             color: var(--text);
@@ -453,57 +427,52 @@
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 600;
-            z-index: 2000;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            z-index: 200;
+            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
 
         /* ============ FOOTER ============ */
         .footer {
             text-align: center;
-            padding: 40px 0;
+            padding: 30px 0;
             color: var(--text3);
-            font-size: 0.75rem;
+            font-size: 0.72rem;
         }
-        .footer a { color: var(--red); text-decoration: none; font-weight: 600; }
+        .footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
 
         /* ============ RESPONSIVE ============ */
         @media (max-width: 640px) {
-            .header { padding: 40px 0 24px; }
-            .header-icon { font-size: 2.5rem; }
+            .header { padding: 40px 0 20px; }
             .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .stat-card { padding: 14px; }
-            .stat-value { font-size: 1.3rem; }
-            .endpoint { flex-wrap: wrap; gap: 8px; padding: 12px; }
+            .stat-card { padding: 12px; }
+            .stat-value { font-size: 1.2rem; }
+            .endpoint { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
             .ep-actions { width: 100%; justify-content: flex-end; }
-            .ep-char { width: 32px; height: 32px; border-radius: 8px; }
-            .ep-path { font-size: 0.7rem; }
-            .modal { padding: 18px; border-radius: 16px; }
+            .ep-path { font-size: 0.68rem; }
         }
     </style>
 </head>
 <body>
 
-    <canvas id="particles"></canvas>
-
     <div class="container">
-        
+
         <!-- HEADER -->
         <header class="header">
-            <div class="header-icon">⛩️</div>
-            <h1>RAMZZ API DOJO</h1>
-            <p class="subtitle">侍 Payment Gateway System</p>
+            <div class="logo">R</div>
+            <h1>RAMZZ <span class="gold">HOSTING</span></h1>
+            <div class="typing-wrap">
+                <span id="typingText"></span><span class="cursor"></span>
+            </div>
             <div class="status-badge">
-                <span class="status-dot"></span>
-                <span id="statusText">API Operational</span>
+                <span class="status-dot"></span> API Operational
             </div>
         </header>
 
         <!-- STATS -->
         <div class="stats">
             <div class="stat-card">
-                <div class="stat-icon">⚔️</div>
+                <div class="stat-icon">⚡</div>
                 <div class="stat-value" id="totalEp">-</div>
                 <div class="stat-label">Endpoints</div>
             </div>
@@ -513,212 +482,152 @@
                 <div class="stat-label">Categories</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-value" id="apiVer">v1.0.0</div>
-                <div class="stat-label">Version</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">⚡</div>
-                <div class="stat-value" id="uptime">-</div>
-                <div class="stat-label">Uptime</div>
+                <div class="stat-icon">🟢</div>
+                <div class="stat-value">Online</div>
+                <div class="stat-label" id="apiVer">v2.0</div>
             </div>
         </div>
 
         <!-- SEARCH -->
         <div class="search-wrap">
-            <input type="text" id="search" placeholder="🔍 Search endpoint... (e.g. order, payment, webhook)" oninput="filterEndpoints()">
+            <input type="text" id="search" placeholder="🔍 Search endpoints..." oninput="filterEndpoints()">
         </div>
 
         <!-- LOADER -->
-        <div class="loader" id="loader">
-            <span class="shuriken">🎯</span>
-        </div>
+        <div class="loader" id="loader"><div class="spinner"></div></div>
 
         <!-- ENDPOINTS -->
-        <div id="endpointsContainer"></div>
+        <div id="container"></div>
 
         <!-- FOOTER -->
         <footer class="footer">
-            <p>⚔️⛩️⚔️ &nbsp; © 2024 <a href="#">RAMZZ HOSTING</a> — Samurai API Dojo 侍</p>
+            © 2024 <a href="#">RAMZZ HOSTING</a> — API Dashboard
         </footer>
-
     </div>
 
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
     <!-- MODAL -->
-    <div class="modal-overlay" id="testerModal">
+    <div class="modal-overlay" id="modal">
         <div class="modal">
             <div class="modal-header">
                 <span class="modal-title">🧪 API Tester</span>
-                <button class="modal-close" onclick="closeTester()">✕</button>
+                <button class="modal-close" onclick="closeModal()">✕</button>
             </div>
-            <div id="testerParams"></div>
-            <button class="btn btn-test" style="width:100%;padding:12px;margin-top:8px;" onclick="executeTest()">
-                ⚡ Execute Request
+            <div id="modalParams"></div>
+            <button class="btn btn-test" style="width:100%;padding:10px;margin-top:6px;" onclick="executeTest()">
+                ⚡ Execute
             </button>
-            <div class="response-box" id="testerResponse">// Response will appear here...</div>
+            <div class="response-box" id="modalResponse">// Response here...</div>
         </div>
     </div>
 
     <script>
-        // ============ PARTICLES ============
-        const canvas = document.getElementById('particles');
-        const ctx = canvas.getContext('2d');
-        let particles = [];
+        // ============ TYPING EFFECT ============
+        const phrases = [
+            'Payment Gateway API',
+            'QRIS Auto Generator',
+            'Order Management System',
+            'Webhook Ready',
+            'REST API v2.0'
+        ];
+        let phraseIndex = 0;
+        let charIndex = 0;
+        let isDeleting = false;
+        const typingEl = document.getElementById('typingText');
 
-        function resizeCanvas() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
+        function typeEffect() {
+            const current = phrases[phraseIndex];
+            if (isDeleting) {
+                typingEl.textContent = current.substring(0, charIndex - 1);
+                charIndex--;
+            } else {
+                typingEl.textContent = current.substring(0, charIndex + 1);
+                charIndex++;
+            }
+
+            if (!isDeleting && charIndex === current.length) {
+                setTimeout(() => isDeleting = true, 1500);
+            } else if (isDeleting && charIndex === 0) {
+                isDeleting = false;
+                phraseIndex = (phraseIndex + 1) % phrases.length;
+            }
+
+            const speed = isDeleting ? 40 : 80;
+            setTimeout(typeEffect, speed);
         }
-        resizeCanvas();
-        window.addEventListener('resize', resizeCanvas);
-
-        class Particle {
-            constructor() {
-                this.reset();
-            }
-            reset() {
-                this.x = Math.random() * canvas.width;
-                this.y = Math.random() * canvas.height;
-                this.size = Math.random() * 1.5 + 0.3;
-                this.speedX = (Math.random() - 0.5) * 0.3;
-                this.speedY = (Math.random() - 0.5) * 0.3;
-                this.opacity = Math.random() * 0.15 + 0.03;
-            }
-            update() {
-                this.x += this.speedX;
-                this.y += this.speedY;
-                if (this.x < -10 || this.x > canvas.width + 10 || this.y < -10 || this.y > canvas.height + 10) {
-                    this.reset();
-                }
-            }
-            draw() {
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                ctx.fillStyle = `rgba(220,38,38,${this.opacity})`;
-                ctx.fill();
-            }
-        }
-
-        for (let i = 0; i < 40; i++) particles.push(new Particle());
-
-        function animateParticles() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            particles.forEach(p => { p.update(); p.draw(); });
-
-            // Connection lines
-            for (let i = 0; i < particles.length; i++) {
-                for (let j = i + 1; j < particles.length; j++) {
-                    const dx = particles[i].x - particles[j].x;
-                    const dy = particles[i].y - particles[j].y;
-                    const dist = Math.sqrt(dx * dx + dy * dy);
-                    if (dist < 100) {
-                        ctx.beginPath();
-                        ctx.moveTo(particles[i].x, particles[i].y);
-                        ctx.lineTo(particles[j].x, particles[j].y);
-                        ctx.strokeStyle = `rgba(220,38,38,${0.025 * (1 - dist / 100)})`;
-                        ctx.lineWidth = 0.3;
-                        ctx.stroke();
-                    }
-                }
-            }
-            requestAnimationFrame(animateParticles);
-        }
-        animateParticles();
+        typeEffect();
 
         // ============ DATA ============
         let allData = {};
-        let currentTestPath = '';
-        let currentTestMethod = 'GET';
+        let currentPath = '';
+        let currentMethod = 'GET';
 
         const catIcons = {
             'Order': '📦', 'Payment': '💳', 'Webhook': '🔗',
             'Notification': '📧', 'Auth': '🔐', 'Downloader': '⬇️',
             'Search': '🔍', 'Tools': '🛠️', 'Stalker': '👁️',
-            'Cloudflare': '☁️', 'Openai': '🤖', 'Imagecreator': '🎨',
-            'Orderkuota': '📱'
+            'Cloudflare': '☁️', 'Openai': '🤖', 'Imagecreator': '🎨'
         };
 
         // ============ FETCH ============
         async function loadEndpoints() {
-            const loader = document.getElementById('loader');
-            loader.classList.add('active');
-            document.getElementById('endpointsContainer').innerHTML = '';
+            document.getElementById('loader').classList.add('active');
+            document.getElementById('container').innerHTML = '';
 
             try {
                 const res = await fetch('/endpoints');
                 const data = await res.json();
-
                 allData = data.categories || data;
+
                 document.getElementById('totalEp').textContent = data.total_endpoints || 0;
                 document.getElementById('totalCat').textContent = data.total_categories || 0;
-                if (data.api) document.getElementById('apiVer').textContent = data.api;
+                if (data.version) document.getElementById('apiVer').textContent = data.version;
 
-                fetchUptime();
                 render(allData);
             } catch (err) {
-                document.getElementById('endpointsContainer').innerHTML = `
-                    <div style="text-align:center;padding:40px;color:var(--red);">
-                        ⚠️ Failed to load endpoints. Is the server running?
-                    </div>`;
+                document.getElementById('container').innerHTML = '<p style="text-align:center;color:var(--red);padding:40px;">⚠️ Failed to load endpoints</p>';
             } finally {
-                loader.classList.remove('active');
-            }
-        }
-
-        async function fetchUptime() {
-            try {
-                const res = await fetch('/health');
-                const data = await res.json();
-                const uptime = data.uptime || 0;
-                const h = Math.floor(uptime / 3600);
-                const m = Math.floor((uptime % 3600) / 60);
-                document.getElementById('uptime').textContent = `${h}h ${m}m`;
-            } catch {
-                document.getElementById('uptime').textContent = 'N/A';
+                document.getElementById('loader').classList.remove('active');
             }
         }
 
         // ============ RENDER ============
         function render(categories) {
-            const container = document.getElementById('endpointsContainer');
-
+            const container = document.getElementById('container');
             Object.keys(categories).sort().forEach((cat, idx) => {
                 const eps = categories[cat];
                 const icon = catIcons[cat] || '📋';
 
-                const section = document.createElement('div');
-                section.className = 'category';
-                section.innerHTML = `
-                    <div class="category-header ${idx === 0 ? 'open' : ''}" onclick="toggleCat(this)">
+                const div = document.createElement('div');
+                div.className = 'category';
+                div.innerHTML = `
+                    <div class="cat-header ${idx === 0 ? 'open' : ''}" onclick="toggleCat(this)">
                         <span class="cat-icon">${icon}</span>
                         <span class="cat-name">${cat}</span>
                         <span class="cat-count">${eps.length}</span>
                         <i class="fas fa-chevron-down cat-arrow"></i>
                     </div>
-                    <div class="category-body ${idx === 0 ? 'open' : ''}">
-                        ${eps.map((ep, i) => {
+                    <div class="cat-body ${idx === 0 ? 'open' : ''}">
+                        ${eps.map(ep => {
                             const method = ep.method || 'GET';
                             const mc = method === 'POST' ? 'method-post' : 'method-get';
-                            const charImg = `https://api.waifu.pics/sfw/samurai?random=${idx}${i}${Date.now()}`;
                             return `
-                                <div class="endpoint" data-cat="${cat.toLowerCase()}" data-name="${ep.name.toLowerCase()}" data-desc="${ep.desc.toLowerCase()}">
-                                    <img src="${charImg}" class="ep-char" alt="char" onerror="this.style.display='none'">
+                                <div class="endpoint" data-cat="${cat.toLowerCase()}" data-name="${ep.name.toLowerCase()}">
                                     <span class="ep-method ${mc}">${method}</span>
                                     <div class="ep-info">
-                                        <div class="ep-path">${escapeHtml(ep.path)}</div>
-                                        <div class="ep-desc">${ep.desc}</div>
+                                        <div class="ep-name">${ep.name}</div>
+                                        <div class="ep-path">${escapeHtml(ep.path.split('?')[0])}</div>
                                     </div>
                                     <div class="ep-actions">
                                         <button class="btn" onclick="copyURL('${escapeHtml(ep.path.split('?')[0])}')">📋</button>
-                                        <button class="btn btn-test" onclick="openTester('${escapeHtml(ep.path)}','${method}')">Test</button>
+                                        <button class="btn btn-test" onclick="openModal('${escapeHtml(ep.path)}','${method}')">Test</button>
                                     </div>
                                 </div>`;
                         }).join('')}
                     </div>`;
-                container.appendChild(section);
+                container.appendChild(div);
             });
         }
 
@@ -732,14 +641,8 @@
             const q = document.getElementById('search').value.toLowerCase();
             document.querySelectorAll('.endpoint').forEach(ep => {
                 const name = ep.dataset.name || '';
-                const desc = ep.dataset.desc || '';
-                const path = ep.querySelector('.ep-path')?.textContent.toLowerCase() || '';
-                ep.style.display = (!q || name.includes(q) || desc.includes(q) || path.includes(q)) ? 'flex' : 'none';
-            });
-
-            document.querySelectorAll('.category').forEach(cat => {
-                const visible = cat.querySelectorAll('.endpoint[style*="display: flex"], .endpoint:not([style*="display: none"])').length;
-                cat.style.display = (!q || visible > 0) ? 'block' : 'none';
+                const path = ep.querySelector('.ep-path')?.textContent || '';
+                ep.style.display = (!q || name.includes(q) || path.includes(q)) ? 'flex' : 'none';
             });
         }
 
@@ -749,53 +652,49 @@
             navigator.clipboard.writeText(full).then(() => showToast('📋 URL Copied!'));
         }
 
-        // ============ TESTER ============
-        function openTester(path, method) {
-            currentTestPath = path;
-            currentTestMethod = method;
-
+        // ============ MODAL ============
+        function openModal(path, method) {
+            currentPath = path;
+            currentMethod = method;
             const [base, qs] = path.split('?');
             const params = qs ? qs.split('&') : [];
 
-            let html = `<label style="font-size:0.7rem;color:var(--text3);">Endpoint</label>
+            let html = `<label style="font-size:0.72rem;color:var(--text3);">Endpoint</label>
                         <input value="${base}" readonly>`;
             params.forEach(p => {
                 const [k] = p.split('=');
-                html += `<div style="display:flex;gap:8px;">
-                    <input value="${k}" readonly style="width:120px;flex-shrink:0;">
-                    <input class="param-val" data-key="${k}" placeholder="${k === 'apikey' ? 'YOUR_KEY' : k}">
+                html += `<div style="display:flex;gap:6px;">
+                    <input value="${k}" readonly style="width:100px;flex-shrink:0;">
+                    <input class="pv" data-key="${k}" placeholder="${k === 'apikey' ? 'YOUR_KEY' : k}">
                 </div>`;
             });
 
-            document.getElementById('testerParams').innerHTML = html;
-            document.getElementById('testerResponse').textContent = '// Response will appear here...';
-            document.getElementById('testerModal').classList.add('active');
+            document.getElementById('modalParams').innerHTML = html;
+            document.getElementById('modalResponse').textContent = '// Response here...';
+            document.getElementById('modal').classList.add('active');
         }
 
-        function closeTester() {
-            document.getElementById('testerModal').classList.remove('active');
+        function closeModal() {
+            document.getElementById('modal').classList.remove('active');
         }
 
         async function executeTest() {
-            const base = currentTestPath.split('?')[0];
-            const vals = document.querySelectorAll('.param-val');
+            const base = currentPath.split('?')[0];
+            const vals = document.querySelectorAll('.pv');
             let qp = [];
-            vals.forEach(v => {
-                if (v.value) qp.push(`${v.dataset.key}=${encodeURIComponent(v.value)}`);
-            });
+            vals.forEach(v => { if (v.value) qp.push(`${v.dataset.key}=${encodeURIComponent(v.value)}`); });
             const url = qp.length ? `${base}?${qp.join('&')}` : base;
 
-            const respBox = document.getElementById('testerResponse');
-            respBox.textContent = '⏳ Executing...';
-
+            const box = document.getElementById('modalResponse');
+            box.textContent = '⏳ Loading...';
             try {
-                const res = await fetch(url, { method: currentTestMethod });
+                const res = await fetch(url, { method: currentMethod });
                 const data = await res.json();
-                respBox.textContent = JSON.stringify(data, null, 2);
-                respBox.style.color = res.ok ? 'var(--green)' : 'var(--red)';
-            } catch (err) {
-                respBox.textContent = `❌ ${err.message}`;
-                respBox.style.color = 'var(--red)';
+                box.textContent = JSON.stringify(data, null, 2);
+                box.style.color = res.ok ? 'var(--green)' : 'var(--red)';
+            } catch (e) {
+                box.textContent = `❌ ${e.message}`;
+                box.style.color = 'var(--red)';
             }
         }
 
@@ -804,27 +703,25 @@
             const t = document.getElementById('toast');
             t.textContent = msg;
             t.classList.add('show');
-            setTimeout(() => t.classList.remove('show'), 2000);
+            setTimeout(() => t.classList.remove('show'), 1800);
         }
 
-        // ============ HELPERS ============
         function escapeHtml(s) {
             return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
-        document.getElementById('testerModal').addEventListener('click', function(e) {
-            if (e.target === this) closeTester();
+        document.getElementById('modal').addEventListener('click', function(e) {
+            if (e.target === this) closeModal();
         });
 
         document.addEventListener('keydown', e => {
-            if (e.key === 'Escape') closeTester();
+            if (e.key === 'Escape') closeModal();
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
                 document.getElementById('search').focus();
             }
         });
 
-        // ============ INIT ============
         loadEndpoints();
     </script>
 </body>
