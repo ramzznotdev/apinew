@@ -1,181 +1,143 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>RAMZZ API DOJO 侍 — Payment Gateway</title>
     
-    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Noto+Serif+JP:wght@400;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Noto+Serif+JP:wght@400;600;700;900&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
     <style>
         :root {
-            --bg-primary: #0a0a0a;
-            --bg-secondary: #111111;
-            --bg-card: #1a1a1a;
+            --bg: #030303;
+            --surface: #0a0a0a;
+            --surface2: #111111;
+            --surface3: #1a1a1a;
+            --border: #1f1f1f;
+            --border-hover: #2a2a2a;
             --red: #dc2626;
-            --red-dark: #991b1b;
+            --red-glow: #ef4444;
             --gold: #f59e0b;
-            --gold-dark: #b45309;
-            --text-primary: #ffffff;
-            --text-secondary: #a3a3a3;
-            --border: #272727;
-            --border-hover: #dc262640;
+            --gold-glow: #fbbf24;
+            --text: #fafafa;
+            --text2: #a1a1aa;
+            --text3: #71717a;
+            --green: #22c55e;
+            --blue: #3b82f6;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            background: var(--bg-primary);
-            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            background: var(--bg);
+            color: var(--text);
             min-height: 100vh;
             overflow-x: hidden;
+            line-height: 1.6;
         }
 
-        /* ==================== BACKGROUND SAMURAI ==================== */
-        .bg-samurai {
+        /* ============ PARTICLES ============ */
+        #particles {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background-image: url('https://images.unsplash.com/photo-1607604276583-eef5f160f1e2?w=1920&q=80');
-            background-size: cover;
-            background-position: center 20%;
-            background-repeat: no-repeat;
-            opacity: 0.08;
-            z-index: 0;
+            inset: 0;
             pointer-events: none;
-        }
-
-        .bg-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100vh;
-            background: linear-gradient(180deg, 
-                rgba(10,10,10,0.3) 0%, 
-                rgba(10,10,10,0.7) 50%, 
-                rgba(10,10,10,0.95) 100%);
             z-index: 0;
-            pointer-events: none;
         }
 
-        /* ==================== WAVE KANAGAWA ==================== */
-        .wave-divider {
-            position: relative;
-            width: 100%;
-            height: 80px;
-            overflow: hidden;
-            z-index: 1;
-        }
-
-        .wave-divider svg {
-            position: absolute;
-            bottom: 0;
-            width: 100%;
-            height: 80px;
-        }
-
-        /* ==================== CONTAINER ==================== */
+        /* ============ MAIN CONTAINER ============ */
         .container {
             position: relative;
             z-index: 2;
-            max-width: 1000px;
+            max-width: 960px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 24px;
         }
 
-        /* ==================== HEADER ==================== */
+        /* ============ HEADER ============ */
         .header {
             text-align: center;
-            padding: 60px 0 40px;
-            position: relative;
+            padding: 64px 0 40px;
         }
 
-        .header-torii {
-            font-size: 3rem;
-            margin-bottom: 10px;
-            animation: floatTorii 3s ease-in-out infinite;
+        .header-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            filter: drop-shadow(0 0 20px rgba(220,38,38,0.4));
+            animation: float 3s ease-in-out infinite;
         }
 
-        @keyframes floatTorii {
+        @keyframes float {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-10px); }
+            50% { transform: translateY(-8px); }
         }
 
-        .header-title {
+        .header h1 {
             font-family: 'Noto Serif JP', serif;
-            font-size: 2.8rem;
+            font-size: clamp(2rem, 5vw, 3.2rem);
             font-weight: 900;
-            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 50%, #dc2626 100%);
+            background: linear-gradient(135deg, #dc2626 0%, #f59e0b 40%, #dc2626 80%);
+            background-size: 200% auto;
             -webkit-background-clip: text;
             background-clip: text;
             -webkit-text-fill-color: transparent;
-            background-size: 200% 200%;
             animation: gradientShift 4s ease infinite;
-            margin-bottom: 8px;
+            letter-spacing: -1px;
         }
 
         @keyframes gradientShift {
-            0%, 100% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
+            0%, 100% { background-position: 0% center; }
+            50% { background-position: 100% center; }
         }
 
-        .header-subtitle {
-            font-size: 1.1rem;
-            color: var(--text-secondary);
-            font-weight: 400;
-            letter-spacing: 2px;
+        .header .subtitle {
+            color: var(--text3);
+            font-size: 0.9rem;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            margin-top: 8px;
         }
 
-        .header-badge {
+        .status-badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
-            background: var(--bg-card);
-            border: 1px solid var(--red-dark);
+            background: rgba(220,38,38,0.08);
+            border: 1px solid rgba(220,38,38,0.2);
             border-radius: 50px;
             padding: 8px 20px;
             margin-top: 16px;
-            font-size: 0.85rem;
-            color: var(--red);
+            font-size: 0.8rem;
+            color: var(--red-glow);
+            font-weight: 500;
         }
 
-        .header-badge .dot {
-            width: 8px;
-            height: 8px;
-            background: #22c55e;
+        .status-dot {
+            width: 7px;
+            height: 7px;
+            background: var(--green);
             border-radius: 50%;
-            animation: pulse 2s ease-in-out infinite;
+            animation: pulse 2s infinite;
         }
 
         @keyframes pulse {
             0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.6); }
-            50% { box-shadow: 0 0 0 12px rgba(34,197,94,0); }
+            50% { box-shadow: 0 0 0 10px rgba(34,197,94,0); }
         }
 
-        /* ==================== STATS CARDS ==================== */
-        .stats-grid {
+        /* ============ STATS ============ */
+        .stats {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 16px;
-            margin-bottom: 30px;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 12px;
+            margin-bottom: 32px;
         }
 
         .stat-card {
-            background: var(--bg-card);
+            background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 16px;
             padding: 20px;
@@ -185,77 +147,76 @@
             overflow: hidden;
         }
 
-        .stat-card:hover {
-            border-color: var(--red-dark);
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(220,38,38,0.1);
-        }
-
-        .stat-card .stat-icon {
-            font-size: 2rem;
-            margin-bottom: 8px;
-        }
-
-        .stat-card .stat-value {
-            font-size: 2rem;
-            font-weight: 800;
-            color: var(--red);
-        }
-
-        .stat-card .stat-label {
-            font-size: 0.8rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 4px;
-        }
-
-        .stat-card::after {
+        .stat-card::before {
             content: '';
             position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: radial-gradient(circle, rgba(220,38,38,0.05) 0%, transparent 70%);
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--red), transparent);
             opacity: 0;
             transition: opacity 0.3s;
         }
 
-        .stat-card:hover::after {
+        .stat-card:hover {
+            border-color: var(--border-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 32px rgba(220,38,38,0.06);
+        }
+
+        .stat-card:hover::before {
             opacity: 1;
         }
 
-        /* ==================== SEARCH BAR ==================== */
-        .search-bar {
+        .stat-icon { font-size: 1.8rem; margin-bottom: 8px; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; color: var(--text); }
+        .stat-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; }
+
+        /* ============ SEARCH ============ */
+        .search-wrap {
             margin-bottom: 24px;
         }
 
-        .search-bar input {
+        .search-wrap input {
             width: 100%;
             padding: 14px 20px;
-            background: var(--bg-card);
+            background: var(--surface2);
             border: 2px solid var(--border);
-            border-radius: 12px;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            transition: all 0.3s ease;
-        }
-
-        .search-bar input:focus {
+            border-radius: 14px;
+            color: var(--text);
+            font-size: 0.9rem;
+            font-family: 'Inter', sans-serif;
+            transition: all 0.3s;
             outline: none;
-            border-color: var(--red-dark);
-            box-shadow: 0 0 20px rgba(220,38,38,0.15);
         }
 
-        .search-bar input::placeholder {
-            color: #525252;
+        .search-wrap input:focus {
+            border-color: rgba(220,38,38,0.4);
+            box-shadow: 0 0 24px rgba(220,38,38,0.06);
         }
 
-        /* ==================== CATEGORY SECTION ==================== */
-        .category-section {
-            margin-bottom: 20px;
+        .search-wrap input::placeholder {
+            color: var(--text3);
+        }
+
+        /* ============ SHURIKEN LOADER ============ */
+        .loader {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+        .loader.active { display: block; }
+        .loader .shuriken {
+            font-size: 2.5rem;
+            animation: spin 0.8s linear infinite;
+            display: inline-block;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* ============ CATEGORY ============ */
+        .category {
+            margin-bottom: 12px;
         }
 
         .category-header {
@@ -263,442 +224,330 @@
             align-items: center;
             gap: 12px;
             padding: 16px 20px;
-            background: var(--bg-card);
+            background: var(--surface2);
             border: 1px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             cursor: pointer;
-            transition: all 0.3s ease;
             user-select: none;
+            transition: all 0.3s;
         }
 
         .category-header:hover {
-            border-color: var(--red-dark);
-            background: #1f1f1f;
+            border-color: var(--border-hover);
+            background: var(--surface3);
         }
 
-        .category-header .category-icon {
-            font-size: 1.5rem;
+        .category-header.open {
+            border-color: rgba(220,38,38,0.25);
+            border-radius: 14px 14px 0 0;
         }
 
-        .category-header .category-name {
-            font-weight: 700;
-            font-size: 1rem;
-            flex: 1;
-        }
-
-        .category-header .category-count {
-            background: var(--red-dark);
-            color: white;
+        .cat-icon { font-size: 1.4rem; flex-shrink: 0; }
+        .cat-name { font-weight: 600; flex: 1; font-size: 0.9rem; }
+        .cat-count {
+            background: rgba(220,38,38,0.12);
+            color: var(--red-glow);
             padding: 3px 10px;
             border-radius: 20px;
-            font-size: 0.75rem;
-            font-weight: 600;
+            font-size: 0.7rem;
+            font-weight: 700;
         }
-
-        .category-header .category-arrow {
-            transition: transform 0.3s ease;
-            color: var(--text-secondary);
+        .cat-arrow {
+            transition: transform 0.3s;
+            color: var(--text3);
+            font-size: 0.7rem;
         }
-
-        .category-header.open .category-arrow {
+        .category-header.open .cat-arrow {
             transform: rotate(180deg);
         }
 
-        /* ==================== ENDPOINT CARDS ==================== */
-        .category-endpoints {
+        .category-body {
             display: none;
-            padding: 8px 0 0 0;
+            border: 1px solid rgba(220,38,38,0.15);
+            border-top: none;
+            border-radius: 0 0 14px 14px;
+            overflow: hidden;
         }
-
-        .category-endpoints.show {
+        .category-body.open {
             display: block;
         }
 
-        .endpoint-card {
+        /* ============ ENDPOINT CARD ============ */
+        .endpoint {
             display: flex;
             align-items: center;
-            gap: 16px;
-            background: var(--bg-secondary);
-            border: 1px solid var(--border);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
+            gap: 14px;
+            padding: 14px 20px;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            transition: all 0.3s;
+            cursor: default;
         }
 
-        .endpoint-card:hover {
-            border-color: var(--red-dark);
-            transform: translateX(8px);
-            box-shadow: 0 0 20px rgba(220,38,38,0.08);
+        .endpoint:last-child { border-bottom: none; }
+
+        .endpoint:hover {
+            background: var(--surface2);
+            transform: translateX(6px);
+            box-shadow: inset 3px 0 0 var(--red);
         }
 
-        .endpoint-card .char-img {
-            width: 50px;
-            height: 50px;
-            border-radius: 12px;
+        .ep-char {
+            width: 42px;
+            height: 42px;
+            border-radius: 10px;
             object-fit: cover;
             flex-shrink: 0;
             border: 2px solid var(--border);
             transition: border-color 0.3s;
         }
 
-        .endpoint-card:hover .char-img {
+        .endpoint:hover .ep-char {
             border-color: var(--red);
         }
 
-        .endpoint-method {
-            padding: 4px 10px;
+        .ep-method {
+            padding: 4px 8px;
             border-radius: 6px;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 0.5px;
             flex-shrink: 0;
         }
+        .method-get { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
+        .method-post { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
 
-        .method-get {
-            background: #22c55e20;
-            color: #22c55e;
-            border: 1px solid #22c55e40;
-        }
-
-        .method-post {
-            background: #3b82f620;
-            color: #3b82f6;
-            border: 1px solid #3b82f640;
-        }
-
-        .endpoint-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .endpoint-path {
-            font-family: 'JetBrains Mono', 'Courier New', monospace;
-            font-size: 0.85rem;
+        .ep-info { flex: 1; min-width: 0; }
+        .ep-path {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
             font-weight: 600;
-            color: var(--text-primary);
             word-break: break-all;
+            color: var(--text);
         }
-
-        .endpoint-desc {
-            font-size: 0.75rem;
-            color: var(--text-secondary);
+        .ep-desc {
+            font-size: 0.7rem;
+            color: var(--text3);
             margin-top: 2px;
         }
 
-        .endpoint-actions {
+        .ep-actions {
             display: flex;
-            gap: 8px;
+            gap: 6px;
             flex-shrink: 0;
         }
 
-        .btn-action {
-            padding: 8px 12px;
+        .btn {
+            padding: 7px 14px;
             border-radius: 8px;
-            border: 1px solid var(--border);
-            background: var(--bg-card);
-            color: var(--text-secondary);
+            font-size: 0.75rem;
+            font-weight: 600;
             cursor: pointer;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
+            transition: all 0.3s;
+            border: 1px solid var(--border);
+            background: var(--surface2);
+            color: var(--text2);
             white-space: nowrap;
+            font-family: 'Inter', sans-serif;
         }
 
-        .btn-action:hover {
-            border-color: var(--red-dark);
-            color: var(--red);
-            background: #1f1f1f;
+        .btn:hover {
+            border-color: var(--border-hover);
+            color: var(--text);
+            background: var(--surface3);
         }
 
         .btn-test {
             background: var(--red);
             color: white;
             border: none;
-            font-weight: 600;
         }
 
         .btn-test:hover {
-            background: var(--red-dark);
+            background: #b91c1c;
             color: white;
+            box-shadow: 0 4px 16px rgba(220,38,38,0.3);
         }
 
-        /* ==================== API TESTER MODAL ==================== */
+        /* ============ MODAL ============ */
         .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
+            inset: 0;
             background: rgba(0,0,0,0.85);
             z-index: 1000;
             align-items: center;
             justify-content: center;
             padding: 20px;
+            backdrop-filter: blur(4px);
         }
-
-        .modal-overlay.active {
-            display: flex;
-        }
+        .modal-overlay.active { display: flex; }
 
         .modal {
-            background: var(--bg-card);
+            background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 20px;
-            padding: 30px;
-            max-width: 700px;
+            padding: 28px;
+            max-width: 650px;
             width: 100%;
-            max-height: 80vh;
+            max-height: 85vh;
             overflow-y: auto;
         }
 
         .modal-header {
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
             margin-bottom: 20px;
         }
-
-        .modal-title {
-            font-size: 1.2rem;
-            font-weight: 700;
-        }
-
+        .modal-title { font-weight: 700; font-size: 1.1rem; }
         .modal-close {
             background: none;
             border: none;
-            color: var(--text-secondary);
-            font-size: 1.5rem;
+            color: var(--text3);
+            font-size: 1.4rem;
             cursor: pointer;
             transition: color 0.3s;
         }
+        .modal-close:hover { color: var(--red); }
 
-        .modal-close:hover {
-            color: var(--red);
-        }
-
-        .modal .param-row {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-
-        .modal .param-row input {
-            flex: 1;
+        .modal input {
+            width: 100%;
             padding: 10px 14px;
-            background: var(--bg-secondary);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text-primary);
-            font-family: 'Plus Jakarta Sans', sans-serif;
-        }
-
-        .modal .param-row input:focus {
+            border-radius: 10px;
+            color: var(--text);
+            font-family: 'Inter', sans-serif;
+            margin-bottom: 8px;
             outline: none;
-            border-color: var(--red-dark);
+            transition: border-color 0.3s;
         }
+        .modal input:focus { border-color: var(--red); }
 
-        .modal .response-area {
+        .response-box {
             background: #000;
             border: 1px solid var(--border);
             border-radius: 12px;
             padding: 16px;
-            margin-top: 16px;
+            margin-top: 12px;
             font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            max-height: 300px;
+            font-size: 0.75rem;
+            max-height: 260px;
             overflow-y: auto;
             white-space: pre-wrap;
-            color: #22c55e;
+            color: var(--green);
         }
 
-        /* ==================== FOOTER ==================== */
+        /* ============ TOAST ============ */
+        .toast {
+            position: fixed;
+            bottom: 24px;
+            left: 50%;
+            transform: translateX(-50%) translateY(120px);
+            background: #18181b;
+            border: 1px solid var(--border);
+            color: var(--text);
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            z-index: 2000;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+        }
+        .toast.show { transform: translateX(-50%) translateY(0); }
+
+        /* ============ FOOTER ============ */
         .footer {
             text-align: center;
             padding: 40px 0;
-            position: relative;
-            z-index: 2;
+            color: var(--text3);
+            font-size: 0.75rem;
         }
+        .footer a { color: var(--red); text-decoration: none; font-weight: 600; }
 
-        .footer-divider {
-            font-size: 2rem;
-            margin-bottom: 16px;
-            color: var(--red);
-        }
-
-        .footer-text {
-            color: var(--text-secondary);
-            font-size: 0.85rem;
-        }
-
-        .footer-text a {
-            color: var(--red);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* ==================== SHURIKEN LOADER ==================== */
-        .shuriken-loader {
-            display: none;
-            width: 40px;
-            height: 40px;
-            margin: 20px auto;
-            animation: shurikenSpin 0.8s linear infinite;
-            font-size: 2rem;
-        }
-
-        .shuriken-loader.active {
-            display: block;
-        }
-
-        @keyframes shurikenSpin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(360deg); }
-        }
-
-        /* ==================== TOAST ==================== */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%) translateY(100px);
-            background: #22c55e;
-            color: #000;
-            padding: 12px 24px;
-            border-radius: 50px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            z-index: 2000;
-            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        .toast.show {
-            transform: translateX(-50%) translateY(0);
-        }
-
-        /* ==================== RESPONSIVE ==================== */
-        @media (max-width: 768px) {
-            .header-title {
-                font-size: 1.8rem;
-            }
-            
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-            
-            .stat-card {
-                padding: 14px;
-            }
-            
-            .stat-card .stat-value {
-                font-size: 1.5rem;
-            }
-            
-            .endpoint-card {
-                flex-wrap: wrap;
-                gap: 10px;
-                padding: 14px;
-            }
-            
-            .endpoint-card .char-img {
-                width: 36px;
-                height: 36px;
-                border-radius: 8px;
-            }
-            
-            .endpoint-actions {
-                width: 100%;
-                justify-content: flex-end;
-            }
-            
-            .modal {
-                padding: 20px;
-            }
-            
-            .modal .param-row {
-                flex-direction: column;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .stats-grid {
-                grid-template-columns: 1fr;
-            }
-            
-            .header-torii {
-                font-size: 2rem;
-            }
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 640px) {
+            .header { padding: 40px 0 24px; }
+            .header-icon { font-size: 2.5rem; }
+            .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+            .stat-card { padding: 14px; }
+            .stat-value { font-size: 1.3rem; }
+            .endpoint { flex-wrap: wrap; gap: 8px; padding: 12px; }
+            .ep-actions { width: 100%; justify-content: flex-end; }
+            .ep-char { width: 32px; height: 32px; border-radius: 8px; }
+            .ep-path { font-size: 0.7rem; }
+            .modal { padding: 18px; border-radius: 16px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ==================== BACKGROUND ==================== -->
-    <div class="bg-samurai"></div>
-    <div class="bg-overlay"></div>
+    <canvas id="particles"></canvas>
 
-    <!-- ==================== CONTAINER ==================== -->
     <div class="container">
-
+        
         <!-- HEADER -->
         <header class="header">
-            <div class="header-torii">⛩️</div>
-            <h1 class="header-title">RAMZZ API DOJO</h1>
-            <p class="header-subtitle">侍 Payment Gateway & Order System</p>
-            <div class="header-badge">
-                <span class="dot"></span>
-                <span id="apiStatus">API Ready</span>
+            <div class="header-icon">⛩️</div>
+            <h1>RAMZZ API DOJO</h1>
+            <p class="subtitle">侍 Payment Gateway System</p>
+            <div class="status-badge">
+                <span class="status-dot"></span>
+                <span id="statusText">API Operational</span>
             </div>
         </header>
 
-        <!-- STATS CARDS -->
-        <div class="stats-grid">
+        <!-- STATS -->
+        <div class="stats">
             <div class="stat-card">
                 <div class="stat-icon">⚔️</div>
-                <div class="stat-value" id="totalEndpoints">-</div>
-                <div class="stat-label">Total Endpoints</div>
+                <div class="stat-value" id="totalEp">-</div>
+                <div class="stat-label">Endpoints</div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon">📦</div>
-                <div class="stat-value" id="totalCategories">-</div>
+                <div class="stat-value" id="totalCat">-</div>
                 <div class="stat-label">Categories</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🟢</div>
-                <div class="stat-value">Online</div>
-                <div class="stat-label" id="apiVersion">v1.0.0</div>
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value" id="apiVer">v1.0.0</div>
+                <div class="stat-label">Version</div>
             </div>
             <div class="stat-card">
-                <div class="stat-icon">🎯</div>
-                <div class="stat-value" id="uptimeDisplay">-</div>
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value" id="uptime">-</div>
                 <div class="stat-label">Uptime</div>
             </div>
         </div>
 
-        <!-- SEARCH BAR -->
-        <div class="search-bar">
-            <input type="text" id="searchInput" placeholder="🔍 Cari endpoint... (contoh: order, payment, webhook)" oninput="filterEndpoints()">
+        <!-- SEARCH -->
+        <div class="search-wrap">
+            <input type="text" id="search" placeholder="🔍 Search endpoint... (e.g. order, payment, webhook)" oninput="filterEndpoints()">
         </div>
 
-        <!-- SHURIKEN LOADER -->
-        <div class="shuriken-loader" id="loader">🎯</div>
+        <!-- LOADER -->
+        <div class="loader" id="loader">
+            <span class="shuriken">🎯</span>
+        </div>
 
-        <!-- ENDPOINTS CONTAINER -->
+        <!-- ENDPOINTS -->
         <div id="endpointsContainer"></div>
 
         <!-- FOOTER -->
         <footer class="footer">
-            <div class="footer-divider">⚔️⛩️⚔️</div>
-            <p class="footer-text">
-                © 2024 <a href="#">RAMZZ HOSTING</a> — Samurai API Dojo 侍
-            </p>
+            <p>⚔️⛩️⚔️ &nbsp; © 2024 <a href="#">RAMZZ HOSTING</a> — Samurai API Dojo 侍</p>
         </footer>
 
     </div>
 
-    <!-- ==================== API TESTER MODAL ==================== -->
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- MODAL -->
     <div class="modal-overlay" id="testerModal">
         <div class="modal">
             <div class="modal-header">
@@ -706,223 +555,220 @@
                 <button class="modal-close" onclick="closeTester()">✕</button>
             </div>
             <div id="testerParams"></div>
-            <button class="btn-action btn-test" onclick="executeTest()" style="width:100%;padding:12px;margin-top:8px;">
-                ⚡ Execute
+            <button class="btn btn-test" style="width:100%;padding:12px;margin-top:8px;" onclick="executeTest()">
+                ⚡ Execute Request
             </button>
-            <div class="response-area" id="testerResponse">// Response akan muncul disini...</div>
+            <div class="response-box" id="testerResponse">// Response will appear here...</div>
         </div>
     </div>
 
-    <!-- ==================== TOAST ==================== -->
-    <div class="toast" id="toast">📋 URL Disalin!</div>
-
-    <!-- ==================== SCRIPTS ==================== -->
     <script>
-        let allEndpoints = {};
-        let currentTestUrl = '';
+        // ============ PARTICLES ============
+        const canvas = document.getElementById('particles');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        class Particle {
+            constructor() {
+                this.reset();
+            }
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.5 + 0.3;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.15 + 0.03;
+            }
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+                if (this.x < -10 || this.x > canvas.width + 10 || this.y < -10 || this.y > canvas.height + 10) {
+                    this.reset();
+                }
+            }
+            draw() {
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(220,38,38,${this.opacity})`;
+                ctx.fill();
+            }
+        }
+
+        for (let i = 0; i < 40; i++) particles.push(new Particle());
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => { p.update(); p.draw(); });
+
+            // Connection lines
+            for (let i = 0; i < particles.length; i++) {
+                for (let j = i + 1; j < particles.length; j++) {
+                    const dx = particles[i].x - particles[j].x;
+                    const dy = particles[i].y - particles[j].y;
+                    const dist = Math.sqrt(dx * dx + dy * dy);
+                    if (dist < 100) {
+                        ctx.beginPath();
+                        ctx.moveTo(particles[i].x, particles[i].y);
+                        ctx.lineTo(particles[j].x, particles[j].y);
+                        ctx.strokeStyle = `rgba(220,38,38,${0.025 * (1 - dist / 100)})`;
+                        ctx.lineWidth = 0.3;
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+        animateParticles();
+
+        // ============ DATA ============
+        let allData = {};
+        let currentTestPath = '';
         let currentTestMethod = 'GET';
 
-        // ==================== FETCH ENDPOINTS ====================
+        const catIcons = {
+            'Order': '📦', 'Payment': '💳', 'Webhook': '🔗',
+            'Notification': '📧', 'Auth': '🔐', 'Downloader': '⬇️',
+            'Search': '🔍', 'Tools': '🛠️', 'Stalker': '👁️',
+            'Cloudflare': '☁️', 'Openai': '🤖', 'Imagecreator': '🎨',
+            'Orderkuota': '📱'
+        };
+
+        // ============ FETCH ============
         async function loadEndpoints() {
             const loader = document.getElementById('loader');
             loader.classList.add('active');
-            
+            document.getElementById('endpointsContainer').innerHTML = '';
+
             try {
                 const res = await fetch('/endpoints');
                 const data = await res.json();
-                
-                allEndpoints = data.categories || data;
-                
-                document.getElementById('totalEndpoints').textContent = data.total_endpoints || Object.values(allEndpoints).flat().length;
-                document.getElementById('totalCategories').textContent = data.total_categories || Object.keys(allEndpoints).length;
-                
-                if (data.api) {
-                    document.getElementById('apiVersion').textContent = data.api;
-                }
-                
+
+                allData = data.categories || data;
+                document.getElementById('totalEp').textContent = data.total_endpoints || 0;
+                document.getElementById('totalCat').textContent = data.total_categories || 0;
+                if (data.api) document.getElementById('apiVer').textContent = data.api;
+
                 fetchUptime();
-                renderEndpoints(allEndpoints);
-                
+                render(allData);
             } catch (err) {
-                console.error('Failed to load endpoints:', err);
                 document.getElementById('endpointsContainer').innerHTML = `
-                    <div style="text-align:center;padding:40px;color:#dc2626;">
-                        ⚠️ Gagal memuat endpoints. Pastikan server berjalan.
-                    </div>
-                `;
+                    <div style="text-align:center;padding:40px;color:var(--red);">
+                        ⚠️ Failed to load endpoints. Is the server running?
+                    </div>`;
             } finally {
                 loader.classList.remove('active');
             }
         }
 
-        // ==================== FETCH UPTIME ====================
         async function fetchUptime() {
             try {
                 const res = await fetch('/health');
                 const data = await res.json();
                 const uptime = data.uptime || 0;
-                const hours = Math.floor(uptime / 3600);
-                const mins = Math.floor((uptime % 3600) / 60);
-                document.getElementById('uptimeDisplay').textContent = `${hours}h ${mins}m`;
-            } catch (err) {
-                document.getElementById('uptimeDisplay').textContent = 'N/A';
+                const h = Math.floor(uptime / 3600);
+                const m = Math.floor((uptime % 3600) / 60);
+                document.getElementById('uptime').textContent = `${h}h ${m}m`;
+            } catch {
+                document.getElementById('uptime').textContent = 'N/A';
             }
         }
 
-        // ==================== RENDER ENDPOINTS ====================
-        function renderEndpoints(categories) {
+        // ============ RENDER ============
+        function render(categories) {
             const container = document.getElementById('endpointsContainer');
-            container.innerHTML = '';
 
-            const categoryIcons = {
-                'Order': '📦',
-                'Payment': '💳',
-                'Webhook': '🔗',
-                'Notification': '📧',
-                'Downloader': '⬇️',
-                'Search': '🔍',
-                'Tools': '🛠️',
-                'Stalker': '👁️',
-                'Cloudflare': '☁️',
-                'Openai': '🤖',
-                'Imagecreator': '🎨',
-                'Orderkuota': '📱'
-            };
-
-            const categoryChars = {
-                'Order': 'https://i.pinimg.com/236x/1a/2b/3c/zoro-wano-icon.jpg',
-                'Payment': 'https://i.pinimg.com/236x/tanjiro-water-icon.jpg',
-                'Webhook': 'https://i.pinimg.com/236x/itachi-icon.jpg',
-                'Notification': 'https://i.pinimg.com/236x/levi-icon.jpg'
-            };
-
-            Object.keys(categories).sort().forEach((category, idx) => {
-                const endpoints = categories[category];
-                const icon = categoryIcons[category] || '📋';
-                const charImg = categoryChars[category] || 
-                    `https://api.waifu.pics/sfw/samurai?random=${idx}`;
+            Object.keys(categories).sort().forEach((cat, idx) => {
+                const eps = categories[cat];
+                const icon = catIcons[cat] || '📋';
 
                 const section = document.createElement('div');
-                section.className = 'category-section';
+                section.className = 'category';
                 section.innerHTML = `
-                    <div class="category-header" onclick="toggleCategory(this)">
-                        <span class="category-icon">${icon}</span>
-                        <span class="category-name">${category}</span>
-                        <span class="category-count">${endpoints.length}</span>
-                        <i class="fas fa-chevron-down category-arrow"></i>
+                    <div class="category-header ${idx === 0 ? 'open' : ''}" onclick="toggleCat(this)">
+                        <span class="cat-icon">${icon}</span>
+                        <span class="cat-name">${cat}</span>
+                        <span class="cat-count">${eps.length}</span>
+                        <i class="fas fa-chevron-down cat-arrow"></i>
                     </div>
-                    <div class="category-endpoints ${idx === 0 ? 'show' : ''}">
-                        ${endpoints.map((ep, i) => {
+                    <div class="category-body ${idx === 0 ? 'open' : ''}">
+                        ${eps.map((ep, i) => {
                             const method = ep.method || 'GET';
-                            const methodClass = method === 'POST' ? 'method-post' : 'method-get';
-                            const charPic = charImg || `https://api.waifu.pics/sfw/samurai?random=${idx}${i}`;
-                            
+                            const mc = method === 'POST' ? 'method-post' : 'method-get';
+                            const charImg = `https://api.waifu.pics/sfw/samurai?random=${idx}${i}${Date.now()}`;
                             return `
-                                <div class="endpoint-card" data-category="${category}" data-name="${ep.name.toLowerCase()}" data-desc="${ep.desc.toLowerCase()}">
-                                    <img src="${charPic}" 
-                                         class="char-img" 
-                                         alt="${ep.name}"
-                                         onerror="this.src='https://api.waifu.pics/sfw/samurai?random=${Date.now()}${i}'">
-                                    <span class="endpoint-method ${methodClass}">${method}</span>
-                                    <div class="endpoint-info">
-                                        <div class="endpoint-path">${ep.path}</div>
-                                        <div class="endpoint-desc">${ep.desc}</div>
+                                <div class="endpoint" data-cat="${cat.toLowerCase()}" data-name="${ep.name.toLowerCase()}" data-desc="${ep.desc.toLowerCase()}">
+                                    <img src="${charImg}" class="ep-char" alt="char" onerror="this.style.display='none'">
+                                    <span class="ep-method ${mc}">${method}</span>
+                                    <div class="ep-info">
+                                        <div class="ep-path">${escapeHtml(ep.path)}</div>
+                                        <div class="ep-desc">${ep.desc}</div>
                                     </div>
-                                    <div class="endpoint-actions">
-                                        <button class="btn-action" onclick="copyURL('${escapeHtml(ep.path)}')" title="Copy URL">
-                                            📋
-                                        </button>
-                                        <button class="btn-action btn-test" onclick="openTester('${escapeHtml(ep.path)}', '${method}')">
-                                            🧪 Test
-                                        </button>
+                                    <div class="ep-actions">
+                                        <button class="btn" onclick="copyURL('${escapeHtml(ep.path.split('?')[0])}')">📋</button>
+                                        <button class="btn btn-test" onclick="openTester('${escapeHtml(ep.path)}','${method}')">Test</button>
                                     </div>
-                                </div>
-                            `;
+                                </div>`;
                         }).join('')}
-                    </div>
-                `;
+                    </div>`;
                 container.appendChild(section);
             });
         }
 
-        // ==================== TOGGLE CATEGORY ====================
-        function toggleCategory(header) {
-            const endpoints = header.nextElementSibling;
-            const isOpen = endpoints.classList.contains('show');
-            
-            if (isOpen) {
-                endpoints.classList.remove('show');
-                header.classList.remove('open');
-            } else {
-                endpoints.classList.add('show');
-                header.classList.add('open');
-            }
+        function toggleCat(header) {
+            header.classList.toggle('open');
+            header.nextElementSibling.classList.toggle('open');
         }
 
-        // ==================== COPY URL ====================
-        function copyURL(path) {
-            const fullUrl = window.location.origin + path.split('?')[0];
-            navigator.clipboard.writeText(fullUrl).then(() => {
-                showToast('📋 URL Disalin!');
-            });
-        }
-
-        // ==================== FILTER ENDPOINTS ====================
+        // ============ SEARCH ============
         function filterEndpoints() {
-            const query = document.getElementById('searchInput').value.toLowerCase();
-            const cards = document.querySelectorAll('.endpoint-card');
-            const sections = document.querySelectorAll('.category-section');
+            const q = document.getElementById('search').value.toLowerCase();
+            document.querySelectorAll('.endpoint').forEach(ep => {
+                const name = ep.dataset.name || '';
+                const desc = ep.dataset.desc || '';
+                const path = ep.querySelector('.ep-path')?.textContent.toLowerCase() || '';
+                ep.style.display = (!q || name.includes(q) || desc.includes(q) || path.includes(q)) ? 'flex' : 'none';
+            });
 
-            sections.forEach(section => {
-                let hasVisible = false;
-                const sectionCards = section.querySelectorAll('.endpoint-card');
-                
-                sectionCards.forEach(card => {
-                    const name = card.dataset.name || '';
-                    const desc = card.dataset.desc || '';
-                    const path = card.querySelector('.endpoint-path')?.textContent.toLowerCase() || '';
-                    
-                    if (!query || name.includes(query) || desc.includes(query) || path.includes(query)) {
-                        card.style.display = 'flex';
-                        hasVisible = true;
-                    } else {
-                        card.style.display = 'none';
-                    }
-                });
-                
-                section.style.display = hasVisible || !query ? 'block' : 'none';
+            document.querySelectorAll('.category').forEach(cat => {
+                const visible = cat.querySelectorAll('.endpoint[style*="display: flex"], .endpoint:not([style*="display: none"])').length;
+                cat.style.display = (!q || visible > 0) ? 'block' : 'none';
             });
         }
 
-        // ==================== API TESTER ====================
+        // ============ COPY ============
+        function copyURL(path) {
+            const full = window.location.origin + path;
+            navigator.clipboard.writeText(full).then(() => showToast('📋 URL Copied!'));
+        }
+
+        // ============ TESTER ============
         function openTester(path, method) {
-            currentTestUrl = path;
+            currentTestPath = path;
             currentTestMethod = method;
-            
-            // Parse parameter dari path
-            const [base, queryString] = path.split('?');
-            const params = queryString ? queryString.split('&') : [];
-            
-            let paramsHtml = `
-                <label style="font-size:0.8rem;color:#a3a3a3;">URL: ${base}</label>
-                <input type="text" id="testBaseUrl" value="${base}" style="width:100%;margin:8px 0;padding:10px;background:#111;border:1px solid #272727;border-radius:8px;color:#fff;">
-            `;
-            
-            params.forEach(param => {
-                const [key, value] = param.split('=');
-                const isApikey = key === 'apikey';
-                paramsHtml += `
-                    <div class="param-row">
-                        <input type="text" value="${key}" readonly style="width:120px;flex-shrink:0;">
-                        <input type="text" class="param-value" data-key="${key}" 
-                               value="${isApikey ? 'YOUR_API_KEY' : ''}" 
-                               placeholder="${key}">
-                    </div>
-                `;
+
+            const [base, qs] = path.split('?');
+            const params = qs ? qs.split('&') : [];
+
+            let html = `<label style="font-size:0.7rem;color:var(--text3);">Endpoint</label>
+                        <input value="${base}" readonly>`;
+            params.forEach(p => {
+                const [k] = p.split('=');
+                html += `<div style="display:flex;gap:8px;">
+                    <input value="${k}" readonly style="width:120px;flex-shrink:0;">
+                    <input class="param-val" data-key="${k}" placeholder="${k === 'apikey' ? 'YOUR_KEY' : k}">
+                </div>`;
             });
-            
-            document.getElementById('testerParams').innerHTML = paramsHtml;
-            document.getElementById('testerResponse').textContent = '// Response akan muncul disini...';
+
+            document.getElementById('testerParams').innerHTML = html;
+            document.getElementById('testerResponse').textContent = '// Response will appear here...';
             document.getElementById('testerModal').classList.add('active');
         }
 
@@ -931,78 +777,55 @@
         }
 
         async function executeTest() {
-            const baseUrl = document.getElementById('testBaseUrl')?.value || currentTestUrl.split('?')[0];
-            const paramInputs = document.querySelectorAll('.param-value');
-            
-            let queryParams = [];
-            paramInputs.forEach(input => {
-                const key = input.dataset.key;
-                const value = input.value;
-                if (value && value !== 'YOUR_API_KEY') {
-                    queryParams.push(`${key}=${encodeURIComponent(value)}`);
-                }
+            const base = currentTestPath.split('?')[0];
+            const vals = document.querySelectorAll('.param-val');
+            let qp = [];
+            vals.forEach(v => {
+                if (v.value) qp.push(`${v.dataset.key}=${encodeURIComponent(v.value)}`);
             });
-            
-            const fullUrl = queryParams.length > 0 
-                ? `${baseUrl}?${queryParams.join('&')}` 
-                : baseUrl;
-            
-            const responseArea = document.getElementById('testerResponse');
-            responseArea.textContent = '⏳ Loading...';
-            
+            const url = qp.length ? `${base}?${qp.join('&')}` : base;
+
+            const respBox = document.getElementById('testerResponse');
+            respBox.textContent = '⏳ Executing...';
+
             try {
-                const res = await fetch(fullUrl, {
-                    method: currentTestMethod,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'x-api-key': document.querySelector('[data-key="apikey"]')?.value || ''
-                    }
-                });
-                
+                const res = await fetch(url, { method: currentTestMethod });
                 const data = await res.json();
-                responseArea.textContent = JSON.stringify(data, null, 2);
-                responseArea.style.color = res.ok ? '#22c55e' : '#ef4444';
-                
+                respBox.textContent = JSON.stringify(data, null, 2);
+                respBox.style.color = res.ok ? 'var(--green)' : 'var(--red)';
             } catch (err) {
-                responseArea.textContent = `❌ Error: ${err.message}`;
-                responseArea.style.color = '#ef4444';
+                respBox.textContent = `❌ ${err.message}`;
+                respBox.style.color = 'var(--red)';
             }
         }
 
-        // ==================== TOAST ====================
-        function showToast(message) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.classList.add('show');
-            
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 2000);
+        // ============ TOAST ============
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.classList.add('show');
+            setTimeout(() => t.classList.remove('show'), 2000);
         }
 
-        // ==================== CLOSE MODAL ON OVERLAY CLICK ====================
+        // ============ HELPERS ============
+        function escapeHtml(s) {
+            return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+        }
+
         document.getElementById('testerModal').addEventListener('click', function(e) {
             if (e.target === this) closeTester();
         });
 
-        // ==================== KEYBOARD SHORTCUTS ====================
-        document.addEventListener('keydown', (e) => {
+        document.addEventListener('keydown', e => {
             if (e.key === 'Escape') closeTester();
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                document.getElementById('searchInput').focus();
+                document.getElementById('search').focus();
             }
         });
 
-        // ==================== HELPER ====================
-        function escapeHtml(str) {
-            return str.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
-        }
-
-        // ==================== INIT ====================
-        document.addEventListener('DOMContentLoaded', () => {
-            loadEndpoints();
-        });
+        // ============ INIT ============
+        loadEndpoints();
     </script>
 </body>
 </html>
