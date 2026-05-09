@@ -41,7 +41,7 @@ const settings = {
   creator: "RamzzNotDev",
   docs: "/endpoints",
   health: "/health",
-  site_url: process.env.SITE_URL || "https://ramzzhosting.com"
+  site_url: process.env.SITE_URL || "https://new-ramzzhostt.vercel.app"
 };
 
 // ==================== STATIC ROUTES ====================
