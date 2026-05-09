@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,412 +7,421 @@
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
 
     <style>
         :root {
-            --bg: #050505;
-            --surface: #0a0a0a;
-            --surface2: #111111;
-            --surface3: #1a1a1a;
-            --border: #1f1f1f;
-            --border-hover: #2a2a2a;
-            --gold: #f59e0b;
-            --gold-dim: #b45309;
-            --text: #fafafa;
-            --text2: #a1a1aa;
-            --text3: #71717a;
-            --green: #22c55e;
+            --bg: #f4f7fe;
+            --surface: #ffffff;
+            --surface2: #f8fafc;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --text2: #64748b;
+            --text3: #94a3b8;
+            --primary: #f59e0b;
+            --primary-dark: #d97706;
+            --green: #10b981;
             --red: #ef4444;
             --blue: #3b82f6;
+            --shadow: 0 4px 20px rgba(0,0,0,0.04);
+            --sidebar-w: 280px;
+        }
+
+        [data-theme="dark"] {
+            --bg: #020617;
+            --surface: #0f172a;
+            --surface2: #1e293b;
+            --border: #1e293b;
+            --text: #f1f5f9;
+            --text2: #94a3b8;
+            --text3: #64748b;
+            --shadow: 0 4px 20px rgba(0,0,0,0.2);
         }
 
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        
         body {
             font-family: 'Inter', sans-serif;
             background: var(--bg);
             color: var(--text);
             min-height: 100vh;
             line-height: 1.6;
+            transition: background 0.3s, color 0.3s;
         }
 
-        /* Grid Background */
-        body::before {
-            content: '';
+        /* ============ SKELETON LOADING ============ */
+        .skeleton {
+            background: linear-gradient(90deg, var(--border) 25%, var(--surface2) 50%, var(--border) 75%);
+            background-size: 200% 100%;
+            animation: shimmer 1.5s infinite;
+            border-radius: 8px;
+            color: transparent !important;
+        }
+        @keyframes shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        /* ============ SIDEBAR OVERLAY ============ */
+        .sidebar-overlay {
             position: fixed;
             inset: 0;
-            background-image: 
-                linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 998;
+            display: none;
+            backdrop-filter: blur(4px);
         }
+        .sidebar-overlay.open { display: block; }
 
-        .container {
-            position: relative;
-            z-index: 1;
-            max-width: 900px;
-            margin: 0 auto;
-            padding: 0 20px;
+        /* ============ SIDEBAR ============ */
+        .sidebar {
+            width: var(--sidebar-w);
+            height: 100vh;
+            position: fixed;
+            left: -100%;
+            top: 0;
+            background: var(--surface);
+            border-right: 1px solid var(--border);
+            padding: 24px 16px;
+            z-index: 999;
+            transition: left 0.3s cubic-bezier(0.4,0,0.2,1);
+            overflow-y: auto;
+        }
+        .sidebar.open { left: 0; }
+
+        .sidebar-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 800;
+            font-size: 1.2rem;
+            margin-bottom: 32px;
+            color: var(--primary);
+        }
+        .sidebar-logo span { background: var(--primary); color: #000; padding: 6px 10px; border-radius: 8px; font-size: 0.9rem; }
+
+        .sidebar-nav { list-style: none; }
+        .sidebar-nav li { margin-bottom: 4px; }
+        .sidebar-nav a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+            border-radius: 10px;
+            text-decoration: none;
+            color: var(--text2);
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+        .sidebar-nav a:hover, .sidebar-nav a.active {
+            background: var(--primary);
+            color: #000;
         }
 
         /* ============ HEADER ============ */
         .header {
+            position: sticky;
+            top: 0;
+            z-index: 900;
+            background: var(--surface);
+            border-bottom: 1px solid var(--border);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            backdrop-filter: blur(10px);
+            transition: background 0.3s;
+        }
+
+        .header-left { display: flex; align-items: center; gap: 12px; }
+        .menu-btn {
+            display: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text);
+        }
+        .header-title { font-weight: 800; font-size: 1.1rem; }
+        .header-title span { color: var(--primary); }
+
+        .header-right { display: flex; align-items: center; gap: 16px; }
+        .theme-btn {
+            font-size: 1.3rem;
+            cursor: pointer;
+            color: var(--text2);
+            transition: color 0.3s;
+        }
+        .theme-btn:hover { color: var(--primary); }
+
+        /* ============ MAIN ============ */
+        .main {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 32px 24px;
+        }
+
+        /* ============ HERO ============ */
+        .hero {
             text-align: center;
-            padding: 60px 0 30px;
+            padding: 40px 0 32px;
         }
-
-        .logo {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 50px;
-            height: 50px;
-            background: linear-gradient(135deg, var(--gold), var(--gold-dim));
-            border-radius: 14px;
-            font-weight: 900;
-            font-size: 1.4rem;
-            color: #000;
-            margin-bottom: 16px;
-        }
-
-        .header h1 {
-            font-size: clamp(1.8rem, 5vw, 2.6rem);
-            font-weight: 800;
-            letter-spacing: -1px;
-            margin-bottom: 6px;
-        }
-
-        .header h1 .gold {
-            color: var(--gold);
-        }
-
-        .typing-wrap {
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-            color: var(--text3);
-            font-size: 0.9rem;
-            font-weight: 400;
-        }
-
-        #typingText {
-            color: var(--gold);
-            font-weight: 500;
-        }
-
-        .cursor {
-            display: inline-block;
-            width: 2px;
-            height: 16px;
-            background: var(--gold);
-            animation: blink 0.8s infinite;
-            margin-left: 2px;
-        }
-
-        @keyframes blink {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0; }
-        }
-
-        .status-badge {
+        .hero-badge {
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            background: rgba(245,158,11,0.08);
-            border: 1px solid rgba(245,158,11,0.15);
+            background: rgba(245,158,11,0.1);
+            border: 1px solid rgba(245,158,11,0.2);
             border-radius: 50px;
             padding: 6px 16px;
             font-size: 0.75rem;
-            color: var(--gold);
-            margin-top: 12px;
-            font-weight: 500;
+            color: var(--primary);
+            font-weight: 600;
+            margin-bottom: 16px;
         }
-
-        .status-dot {
-            width: 6px;
-            height: 6px;
+        .hero-badge .dot {
+            width: 7px; height: 7px;
             background: var(--green);
             border-radius: 50%;
             animation: pulse 2s infinite;
         }
-
         @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
-            50% { box-shadow: 0 0 0 8px rgba(34,197,94,0); }
+            0%,100%{box-shadow:0 0 0 0 rgba(16,185,129,0.5)}
+            50%{box-shadow:0 0 0 8px rgba(16,185,129,0)}
         }
+
+        .hero h1 {
+            font-size: clamp(1.8rem, 4vw, 2.8rem);
+            font-weight: 900;
+            letter-spacing: -1px;
+            margin-bottom: 8px;
+        }
+        .hero h1 span { color: var(--primary); }
+        .hero p { color: var(--text2); font-size: 0.95rem; max-width: 500px; margin: 0 auto; }
 
         /* ============ STATS ============ */
-        .stats {
+        .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-            gap: 10px;
-            margin-bottom: 24px;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 24px 0 32px;
         }
-
         .stat-card {
-            background: var(--surface2);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 14px;
-            padding: 18px;
+            border-radius: 16px;
+            padding: 20px;
             text-align: center;
             transition: all 0.3s;
+            box-shadow: var(--shadow);
         }
-
-        .stat-card:hover {
-            border-color: rgba(245,158,11,0.25);
-            transform: translateY(-2px);
-        }
-
-        .stat-icon { font-size: 1.4rem; margin-bottom: 6px; }
-        .stat-value { font-size: 1.6rem; font-weight: 700; }
+        .stat-card:hover { transform: translateY(-3px); border-color: var(--primary); }
+        .stat-icon { font-size: 1.5rem; margin-bottom: 6px; }
+        .stat-value { font-size: 1.8rem; font-weight: 800; }
         .stat-label { font-size: 0.7rem; color: var(--text3); text-transform: uppercase; letter-spacing: 1px; }
 
         /* ============ SEARCH ============ */
-        .search-wrap {
-            margin-bottom: 20px;
-        }
-
+        .search-wrap { margin-bottom: 24px; }
         .search-wrap input {
             width: 100%;
             padding: 12px 18px;
-            background: var(--surface2);
+            background: var(--surface);
             border: 2px solid var(--border);
-            border-radius: 12px;
+            border-radius: 14px;
             color: var(--text);
             font-size: 0.9rem;
-            font-family: 'Inter', sans-serif;
             outline: none;
             transition: all 0.3s;
+            font-family: 'Inter', sans-serif;
         }
+        .search-wrap input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        .search-wrap input::placeholder { color: var(--text3); }
 
-        .search-wrap input:focus {
-            border-color: rgba(245,158,11,0.35);
-            box-shadow: 0 0 20px rgba(245,158,11,0.04);
+        /* ============ CATEGORY CARD ============ */
+        .category-card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: 20px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
         }
-
-        .search-wrap input::placeholder {
-            color: var(--text3);
-        }
-
-        /* ============ LOADER ============ */
-        .loader {
-            display: none;
-            text-align: center;
-            padding: 40px;
-        }
-        .loader.active { display: block; }
-        .loader .spinner {
-            width: 32px;
-            height: 32px;
-            border: 3px solid var(--border);
-            border-top-color: var(--gold);
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-            margin: 0 auto;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* ============ CATEGORY ============ */
-        .category {
-            margin-bottom: 10px;
-        }
-
         .cat-header {
             display: flex;
             align-items: center;
-            gap: 10px;
-            padding: 14px 18px;
-            background: var(--surface2);
-            border: 1px solid var(--border);
-            border-radius: 12px;
+            gap: 12px;
+            padding: 16px 20px;
             cursor: pointer;
             user-select: none;
-            transition: all 0.3s;
+            transition: background 0.3s;
+            font-weight: 700;
         }
-
-        .cat-header:hover {
-            border-color: var(--border-hover);
-            background: var(--surface3);
-        }
-
-        .cat-header.open {
-            border-color: rgba(245,158,11,0.25);
-            border-radius: 12px 12px 0 0;
-        }
-
-        .cat-icon { font-size: 1.2rem; flex-shrink: 0; }
-        .cat-name { font-weight: 600; flex: 1; font-size: 0.9rem; }
-        .cat-count {
+        .cat-header:hover { background: var(--surface2); }
+        .cat-header .arrow { margin-left: auto; transition: transform 0.3s; font-size: 0.8rem; }
+        .cat-header.open .arrow { transform: rotate(180deg); }
+        .cat-badge {
             background: rgba(245,158,11,0.1);
-            color: var(--gold);
+            color: var(--primary);
             padding: 3px 10px;
             border-radius: 20px;
             font-size: 0.7rem;
             font-weight: 700;
         }
-        .cat-arrow {
-            font-size: 0.65rem;
-            color: var(--text3);
-            transition: transform 0.3s;
-        }
-        .cat-header.open .cat-arrow {
-            transform: rotate(180deg);
-        }
-
-        .cat-body {
-            display: none;
-            border: 1px solid rgba(245,158,11,0.15);
-            border-top: none;
-            border-radius: 0 0 12px 12px;
-            overflow: hidden;
-        }
+        .cat-body { display: none; }
         .cat-body.open { display: block; }
 
-        /* ============ ENDPOINT CARD ============ */
-        .endpoint {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 18px;
-            background: var(--surface);
+        /* ============ ENDPOINT TABLE ============ */
+        .table-wrap { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; }
+        th {
+            text-align: left;
+            padding: 12px 16px;
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--text3);
             border-bottom: 1px solid var(--border);
-            transition: all 0.25s;
+            white-space: nowrap;
         }
-
-        .endpoint:last-child { border-bottom: none; }
-
-        .endpoint:hover {
-            background: var(--surface2);
-            box-shadow: inset 3px 0 0 var(--gold);
+        td {
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
         }
+        tr:hover td { background: var(--surface2); }
 
-        .ep-method {
+        .method-badge {
             padding: 4px 8px;
-            border-radius: 5px;
-            font-size: 0.6rem;
+            border-radius: 6px;
+            font-size: 0.65rem;
             font-weight: 700;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            flex-shrink: 0;
         }
-        .method-get { background: rgba(34,197,94,0.1); color: var(--green); border: 1px solid rgba(34,197,94,0.2); }
-        .method-post { background: rgba(59,130,246,0.1); color: var(--blue); border: 1px solid rgba(59,130,246,0.2); }
+        .method-get { background: rgba(16,185,129,0.1); color: var(--green); }
+        .method-post { background: rgba(59,130,246,0.1); color: var(--blue); }
 
-        .ep-info { flex: 1; min-width: 0; }
-        .ep-name { font-size: 0.85rem; font-weight: 600; }
-        .ep-path {
-            font-family: 'SF Mono', 'Cascadia Code', monospace;
-            font-size: 0.72rem;
-            color: var(--text3);
-            word-break: break-all;
-            margin-top: 1px;
-        }
-
-        .ep-actions { display: flex; gap: 6px; flex-shrink: 0; }
-
-        .btn {
-            padding: 7px 12px;
-            border-radius: 7px;
+        .btn-sm {
+            padding: 6px 14px;
+            border-radius: 8px;
             font-size: 0.72rem;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.3s;
+            transition: all 0.2s;
             border: 1px solid var(--border);
             background: var(--surface2);
             color: var(--text2);
             font-family: 'Inter', sans-serif;
-            white-space: nowrap;
         }
-
-        .btn:hover {
-            border-color: var(--border-hover);
-            color: var(--text);
-        }
-
+        .btn-sm:hover { border-color: var(--primary); color: var(--primary); }
         .btn-test {
-            background: var(--gold);
+            background: var(--primary);
             color: #000;
             border: none;
             font-weight: 700;
         }
-
-        .btn-test:hover {
-            background: #e5900a;
-            color: #000;
-        }
+        .btn-test:hover { background: var(--primary-dark); color: #000; }
 
         /* ============ MODAL ============ */
         .modal-overlay {
             display: none;
             position: fixed;
             inset: 0;
-            background: rgba(0,0,0,0.8);
-            z-index: 100;
+            background: rgba(0,0,0,0.75);
+            z-index: 2000;
             align-items: center;
             justify-content: center;
             padding: 16px;
-            backdrop-filter: blur(3px);
+            backdrop-filter: blur(6px);
         }
         .modal-overlay.active { display: flex; }
-
         .modal {
-            background: var(--surface2);
+            background: var(--surface);
             border: 1px solid var(--border);
-            border-radius: 18px;
-            padding: 24px;
-            max-width: 600px;
+            border-radius: 20px;
             width: 100%;
+            max-width: 700px;
             max-height: 85vh;
             overflow-y: auto;
+            overflow: hidden;
         }
-
         .modal-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid var(--border);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 18px;
         }
-        .modal-title { font-weight: 700; font-size: 1rem; }
-        .modal-close {
-            background: none;
-            border: none;
-            color: var(--text3);
-            font-size: 1.3rem;
-            cursor: pointer;
-        }
+        .modal-title { font-weight: 800; }
+        .modal-close { cursor: pointer; font-size: 1.3rem; color: var(--text3); }
         .modal-close:hover { color: var(--red); }
+        .modal-body { padding: 20px 24px; }
 
-        .modal input {
-            width: 100%;
-            padding: 10px 12px;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            border-radius: 8px;
-            color: var(--text);
-            font-family: 'Inter', sans-serif;
-            margin-bottom: 6px;
-            outline: none;
-            font-size: 0.85rem;
+        .progress-bar-wrap {
+            height: 4px;
+            background: var(--border);
+            border-radius: 2px;
+            overflow: hidden;
         }
-        .modal input:focus { border-color: var(--gold); }
+        .progress-bar-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.3s;
+        }
 
-        .response-box {
-            background: #000;
+        .url-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--surface2);
             border: 1px solid var(--border);
             border-radius: 10px;
-            padding: 14px;
-            margin-top: 10px;
-            font-family: 'SF Mono', monospace;
-            font-size: 0.72rem;
-            max-height: 250px;
+            padding: 10px 14px;
+            margin: 12px 0;
+        }
+        .url-box code {
+            flex: 1;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.78rem;
+            color: var(--primary);
+            word-break: break-all;
+        }
+        .url-box i { cursor: pointer; color: var(--text3); }
+        .url-box i:hover { color: var(--primary); }
+
+        .response-box {
+            background: #0d1117;
+            border-radius: 12px;
+            padding: 16px;
+            margin-top: 12px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: #c9d1d9;
+            max-height: 300px;
             overflow-y: auto;
             white-space: pre-wrap;
-            color: var(--green);
+            position: relative;
         }
+        .response-box .copy-icon {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            cursor: pointer;
+            color: #8b949e;
+        }
+
+        /* ============ FOOTER ============ */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--text3);
+            font-size: 0.75rem;
+            border-top: 1px solid var(--border);
+            margin-top: 40px;
+        }
+        .footer a { color: var(--primary); text-decoration: none; font-weight: 600; }
 
         /* ============ TOAST ============ */
         .toast {
@@ -420,57 +429,68 @@
             bottom: 20px;
             left: 50%;
             transform: translateX(-50%) translateY(100px);
-            background: #18181b;
+            background: var(--surface);
             border: 1px solid var(--border);
             color: var(--text);
             padding: 10px 20px;
             border-radius: 50px;
             font-size: 0.8rem;
             font-weight: 600;
-            z-index: 200;
-            transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+            z-index: 3000;
+            transition: transform 0.35s ease;
+            box-shadow: var(--shadow);
         }
         .toast.show { transform: translateX(-50%) translateY(0); }
 
-        /* ============ FOOTER ============ */
-        .footer {
-            text-align: center;
-            padding: 30px 0;
-            color: var(--text3);
-            font-size: 0.72rem;
-        }
-        .footer a { color: var(--gold); text-decoration: none; font-weight: 600; }
-
         /* ============ RESPONSIVE ============ */
-        @media (max-width: 640px) {
-            .header { padding: 40px 0 20px; }
-            .stats { grid-template-columns: repeat(2, 1fr); gap: 8px; }
-            .stat-card { padding: 12px; }
-            .stat-value { font-size: 1.2rem; }
-            .endpoint { flex-wrap: wrap; gap: 8px; padding: 10px 14px; }
-            .ep-actions { width: 100%; justify-content: flex-end; }
-            .ep-path { font-size: 0.68rem; }
+        @media (max-width: 768px) {
+            .menu-btn { display: block; }
+            .main { padding: 20px 14px; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 10px 8px; font-size: 0.72rem; }
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
+    <!-- SIDEBAR OVERLAY -->
+    <div class="sidebar-overlay" id="overlay" onclick="closeSidebar()"></div>
 
-        <!-- HEADER -->
-        <header class="header">
-            <div class="logo">R</div>
-            <h1>RAMZZ <span class="gold">HOSTING</span></h1>
-            <div class="typing-wrap">
-                <span id="typingText"></span><span class="cursor"></span>
-            </div>
-            <div class="status-badge">
-                <span class="status-dot"></span> API Operational
-            </div>
-        </header>
+    <!-- SIDEBAR -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            <span>R</span> RAMZZ API
+        </div>
+        <ul class="sidebar-nav" id="sidebarNav">
+            <div class="skeleton" style="height:40px;margin-bottom:8px;"></div>
+            <div class="skeleton" style="height:40px;margin-bottom:8px;"></div>
+            <div class="skeleton" style="height:40px;margin-bottom:8px;"></div>
+        </ul>
+    </aside>
+
+    <!-- HEADER -->
+    <header class="header">
+        <div class="header-left">
+            <i class="bi bi-list menu-btn" onclick="openSidebar()"></i>
+            <div class="header-title">RAMZZ <span>HOSTING</span></div>
+        </div>
+        <div class="header-right">
+            <i class="bi bi-moon-stars-fill theme-btn" id="themeIcon" onclick="toggleTheme()" title="Toggle theme"></i>
+        </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="main">
+
+        <!-- HERO -->
+        <section class="hero" data-aos="fade-up">
+            <div class="hero-badge"><span class="dot"></span> API v2.0 Operational</div>
+            <h1>Payment Gateway <span>REST API</span></h1>
+            <p>QRIS auto-generator, order management, webhook ready, dan notifikasi real-time.</p>
+        </section>
 
         <!-- STATS -->
-        <div class="stats">
+        <div class="stats-grid" data-aos="fade-up" data-aos-delay="100">
             <div class="stat-card">
                 <div class="stat-icon">⚡</div>
                 <div class="stat-value" id="totalEp">-</div>
@@ -484,151 +504,149 @@
             <div class="stat-card">
                 <div class="stat-icon">🟢</div>
                 <div class="stat-value">Online</div>
-                <div class="stat-label" id="apiVer">v2.0</div>
+                <div class="stat-label">Status</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value" id="apiVer">v2.0</div>
+                <div class="stat-label">Version</div>
             </div>
         </div>
 
         <!-- SEARCH -->
-        <div class="search-wrap">
-            <input type="text" id="search" placeholder="🔍 Search endpoints..." oninput="filterEndpoints()">
+        <div class="search-wrap" data-aos="fade-up" data-aos-delay="150">
+            <input type="text" id="searchInput" placeholder="🔍 Search endpoints..." oninput="filterEndpoints()">
         </div>
 
-        <!-- LOADER -->
-        <div class="loader" id="loader"><div class="spinner"></div></div>
-
-        <!-- ENDPOINTS -->
-        <div id="container"></div>
+        <!-- ENDPOINTS CONTAINER -->
+        <div id="endpointsContainer">
+            <div class="category-card"><div class="skeleton" style="height:200px;"></div></div>
+            <div class="category-card"><div class="skeleton" style="height:200px;"></div></div>
+        </div>
 
         <!-- FOOTER -->
         <footer class="footer">
-            © 2024 <a href="#">RAMZZ HOSTING</a> — API Dashboard
+            © 2024 <a href="#">RAMZZ HOSTING</a> — Samurai API Dojo 侍
         </footer>
-    </div>
+
+    </main>
 
     <!-- TOAST -->
     <div class="toast" id="toast"></div>
 
     <!-- MODAL -->
-    <div class="modal-overlay" id="modal">
+    <div class="modal-overlay" id="testerModal">
         <div class="modal">
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" id="progressBar"></div></div>
             <div class="modal-header">
-                <span class="modal-title">🧪 API Tester</span>
-                <button class="modal-close" onclick="closeModal()">✕</button>
+                <span class="modal-title" id="modalTitle">API Tester</span>
+                <i class="bi bi-x-lg modal-close" onclick="closeModal()"></i>
             </div>
-            <div id="modalParams"></div>
-            <button class="btn btn-test" style="width:100%;padding:10px;margin-top:6px;" onclick="executeTest()">
-                ⚡ Execute
-            </button>
-            <div class="response-box" id="modalResponse">// Response here...</div>
+            <div class="modal-body">
+                <div class="url-box">
+                    <code id="modalUrl">/api/example</code>
+                    <i class="bi bi-clipboard" onclick="copyModalURL()" title="Copy URL"></i>
+                </div>
+                <div class="response-box" id="modalResponse">
+                    <i class="bi bi-clipboard copy-icon" onclick="copyModalResponse()" title="Copy"></i>
+                    // Click Execute to test
+                </div>
+            </div>
         </div>
     </div>
 
+    <!-- SCRIPTS -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
     <script>
-        // ============ TYPING EFFECT ============
-        const phrases = [
-            'Payment Gateway API',
-            'QRIS Auto Generator',
-            'Order Management System',
-            'Webhook Ready',
-            'REST API v2.0'
-        ];
-        let phraseIndex = 0;
-        let charIndex = 0;
-        let isDeleting = false;
-        const typingEl = document.getElementById('typingText');
+        AOS.init({ duration: 600, once: true });
 
-        function typeEffect() {
-            const current = phrases[phraseIndex];
-            if (isDeleting) {
-                typingEl.textContent = current.substring(0, charIndex - 1);
-                charIndex--;
-            } else {
-                typingEl.textContent = current.substring(0, charIndex + 1);
-                charIndex++;
-            }
-
-            if (!isDeleting && charIndex === current.length) {
-                setTimeout(() => isDeleting = true, 1500);
-            } else if (isDeleting && charIndex === 0) {
-                isDeleting = false;
-                phraseIndex = (phraseIndex + 1) % phrases.length;
-            }
-
-            const speed = isDeleting ? 40 : 80;
-            setTimeout(typeEffect, speed);
-        }
-        typeEffect();
-
-        // ============ DATA ============
         let allData = {};
-        let currentPath = '';
-        let currentMethod = 'GET';
+        let currentTestUrl = '';
 
-        const catIcons = {
-            'Order': '📦', 'Payment': '💳', 'Webhook': '🔗',
-            'Notification': '📧', 'Auth': '🔐', 'Downloader': '⬇️',
-            'Search': '🔍', 'Tools': '🛠️', 'Stalker': '👁️',
-            'Cloudflare': '☁️', 'Openai': '🤖', 'Imagecreator': '🎨'
-        };
+        // ============ THEME ============
+        function toggleTheme() {
+            const html = document.documentElement;
+            const current = html.getAttribute('data-theme');
+            const next = current === 'dark' ? 'light' : 'dark';
+            html.setAttribute('data-theme', next);
+            document.getElementById('themeIcon').className = next === 'dark' ? 'bi bi-moon-stars-fill theme-btn' : 'bi bi-sun-fill theme-btn';
+        }
 
-        // ============ FETCH ============
+        // ============ SIDEBAR ============
+        function openSidebar() { document.getElementById('sidebar').classList.add('open'); document.getElementById('overlay').classList.add('open'); }
+        function closeSidebar() { document.getElementById('sidebar').classList.remove('open'); document.getElementById('overlay').classList.remove('open'); }
+
+        // ============ FETCH ENDPOINTS ============
         async function loadEndpoints() {
-            document.getElementById('loader').classList.add('active');
-            document.getElementById('container').innerHTML = '';
-
             try {
                 const res = await fetch('/endpoints');
                 const data = await res.json();
                 allData = data.categories || data;
-
+                
                 document.getElementById('totalEp').textContent = data.total_endpoints || 0;
                 document.getElementById('totalCat').textContent = data.total_categories || 0;
                 if (data.version) document.getElementById('apiVer').textContent = data.version;
 
-                render(allData);
+                renderEndpoints(allData);
+                renderSidebar(allData);
             } catch (err) {
-                document.getElementById('container').innerHTML = '<p style="text-align:center;color:var(--red);padding:40px;">⚠️ Failed to load endpoints</p>';
-            } finally {
-                document.getElementById('loader').classList.remove('active');
+                document.getElementById('endpointsContainer').innerHTML = '<p style="text-align:center;color:var(--red);">⚠️ Failed to load endpoints</p>';
             }
         }
 
-        // ============ RENDER ============
-        function render(categories) {
-            const container = document.getElementById('container');
+        const catIcons = { 'Order':'📦','Payment':'💳','Webhook':'🔗','Notification':'📧','Auth':'🔐','Downloader':'⬇️','Search':'🔍','Tools':'🛠️','Stalker':'👁️','Cloudflare':'☁️','Openai':'🤖','Imagecreator':'🎨','Orderkuota':'📱' };
+
+        function renderEndpoints(categories) {
+            const container = document.getElementById('endpointsContainer');
+            container.innerHTML = '';
+
             Object.keys(categories).sort().forEach((cat, idx) => {
                 const eps = categories[cat];
                 const icon = catIcons[cat] || '📋';
+                
+                let rows = '';
+                eps.forEach(ep => {
+                    const method = ep.method || 'GET';
+                    const mc = method === 'POST' ? 'method-post' : 'method-get';
+                    rows += `
+                        <tr data-cat="${cat.toLowerCase()}" data-name="${ep.name.toLowerCase()}" data-desc="${(ep.desc||'').toLowerCase()}">
+                            <td style="font-weight:600;">${ep.name}</td>
+                            <td><span class="method-badge ${mc}">${method}</span></td>
+                            <td><code style="color:var(--text3);font-size:0.75rem;">${escapeHtml(ep.path.split('?')[0])}</code></td>
+                            <td>
+                                <button class="btn-sm" onclick="copyURL('${escapeHtml(ep.path.split('?')[0])}')">📋</button>
+                                <button class="btn-sm btn-test" onclick="openModal('${escapeHtml(ep.path)}','${method}','${escapeHtml(ep.name)}')">Test</button>
+                            </td>
+                        </tr>`;
+                });
 
-                const div = document.createElement('div');
-                div.className = 'category';
-                div.innerHTML = `
-                    <div class="cat-header ${idx === 0 ? 'open' : ''}" onclick="toggleCat(this)">
-                        <span class="cat-icon">${icon}</span>
-                        <span class="cat-name">${cat}</span>
-                        <span class="cat-count">${eps.length}</span>
-                        <i class="fas fa-chevron-down cat-arrow"></i>
-                    </div>
-                    <div class="cat-body ${idx === 0 ? 'open' : ''}">
-                        ${eps.map(ep => {
-                            const method = ep.method || 'GET';
-                            const mc = method === 'POST' ? 'method-post' : 'method-get';
-                            return `
-                                <div class="endpoint" data-cat="${cat.toLowerCase()}" data-name="${ep.name.toLowerCase()}">
-                                    <span class="ep-method ${mc}">${method}</span>
-                                    <div class="ep-info">
-                                        <div class="ep-name">${ep.name}</div>
-                                        <div class="ep-path">${escapeHtml(ep.path.split('?')[0])}</div>
-                                    </div>
-                                    <div class="ep-actions">
-                                        <button class="btn" onclick="copyURL('${escapeHtml(ep.path.split('?')[0])}')">📋</button>
-                                        <button class="btn btn-test" onclick="openModal('${escapeHtml(ep.path)}','${method}')">Test</button>
-                                    </div>
-                                </div>`;
-                        }).join('')}
+                container.innerHTML += `
+                    <div class="category-card" data-aos="fade-up" data-aos-delay="${100 + idx * 50}">
+                        <div class="cat-header ${idx === 0 ? 'open' : ''}" onclick="toggleCat(this)">
+                            <span>${icon}</span> ${cat}
+                            <span class="cat-badge">${eps.length}</span>
+                            <i class="bi bi-chevron-down arrow"></i>
+                        </div>
+                        <div class="cat-body ${idx === 0 ? 'open' : ''}">
+                            <div class="table-wrap">
+                                <table>
+                                    <thead><tr><th>Name</th><th>Method</th><th>Path</th><th>Action</th></tr></thead>
+                                    <tbody>${rows}</tbody>
+                                </table>
+                            </div>
+                        </div>
                     </div>`;
-                container.appendChild(div);
             });
+        }
+
+        function renderSidebar(categories) {
+            const nav = document.getElementById('sidebarNav');
+            let links = '';
+            Object.keys(categories).sort().forEach(cat => {
+                const icon = catIcons[cat] || '📋';
+                links += `<li><a href="#" onclick="closeSidebar()">${icon} ${cat}</a></li>`;
+            });
+            nav.innerHTML = links;
         }
 
         function toggleCat(header) {
@@ -636,66 +654,66 @@
             header.nextElementSibling.classList.toggle('open');
         }
 
-        // ============ SEARCH ============
         function filterEndpoints() {
-            const q = document.getElementById('search').value.toLowerCase();
-            document.querySelectorAll('.endpoint').forEach(ep => {
-                const name = ep.dataset.name || '';
-                const path = ep.querySelector('.ep-path')?.textContent || '';
-                ep.style.display = (!q || name.includes(q) || path.includes(q)) ? 'flex' : 'none';
+            const q = document.getElementById('searchInput').value.toLowerCase();
+            document.querySelectorAll('tbody tr').forEach(row => {
+                const name = row.dataset.name || '';
+                const desc = row.dataset.desc || '';
+                row.style.display = (!q || name.includes(q) || desc.includes(q)) ? '' : 'none';
             });
         }
 
-        // ============ COPY ============
         function copyURL(path) {
-            const full = window.location.origin + path;
-            navigator.clipboard.writeText(full).then(() => showToast('📋 URL Copied!'));
+            navigator.clipboard.writeText(window.location.origin + path).then(() => showToast('📋 URL Copied!'));
         }
 
         // ============ MODAL ============
-        function openModal(path, method) {
-            currentPath = path;
-            currentMethod = method;
-            const [base, qs] = path.split('?');
-            const params = qs ? qs.split('&') : [];
-
-            let html = `<label style="font-size:0.72rem;color:var(--text3);">Endpoint</label>
-                        <input value="${base}" readonly>`;
-            params.forEach(p => {
-                const [k] = p.split('=');
-                html += `<div style="display:flex;gap:6px;">
-                    <input value="${k}" readonly style="width:100px;flex-shrink:0;">
-                    <input class="pv" data-key="${k}" placeholder="${k === 'apikey' ? 'YOUR_KEY' : k}">
-                </div>`;
-            });
-
-            document.getElementById('modalParams').innerHTML = html;
-            document.getElementById('modalResponse').textContent = '// Response here...';
-            document.getElementById('modal').classList.add('active');
+        function openModal(path, method, name) {
+            currentTestUrl = window.location.origin + path.split('?')[0];
+            document.getElementById('modalUrl').textContent = currentTestUrl;
+            document.getElementById('modalTitle').textContent = name;
+            document.getElementById('modalResponse').innerHTML = '<i class="bi bi-clipboard copy-icon" onclick="copyModalResponse()"></i>// Execute to see response';
+            document.getElementById('testerModal').classList.add('active');
+            executeTest();
         }
 
         function closeModal() {
-            document.getElementById('modal').classList.remove('active');
+            document.getElementById('testerModal').classList.remove('active');
+            document.getElementById('progressBar').style.width = '0%';
         }
 
         async function executeTest() {
-            const base = currentPath.split('?')[0];
-            const vals = document.querySelectorAll('.pv');
-            let qp = [];
-            vals.forEach(v => { if (v.value) qp.push(`${v.dataset.key}=${encodeURIComponent(v.value)}`); });
-            const url = qp.length ? `${base}?${qp.join('&')}` : base;
+            const bar = document.getElementById('progressBar');
+            const respBox = document.getElementById('modalResponse');
+            
+            let progress = 0;
+            const timer = setInterval(() => {
+                progress += Math.random() * 25;
+                if (progress > 90) clearInterval(timer);
+                bar.style.width = Math.min(progress, 90) + '%';
+            }, 150);
 
-            const box = document.getElementById('modalResponse');
-            box.textContent = '⏳ Loading...';
             try {
-                const res = await fetch(url, { method: currentMethod });
+                const res = await fetch(currentTestUrl);
                 const data = await res.json();
-                box.textContent = JSON.stringify(data, null, 2);
-                box.style.color = res.ok ? 'var(--green)' : 'var(--red)';
+                clearInterval(timer);
+                bar.style.width = '100%';
+                respBox.innerHTML = `<i class="bi bi-clipboard copy-icon" onclick="copyModalResponse()"></i>${JSON.stringify(data, null, 2)}`;
             } catch (e) {
-                box.textContent = `❌ ${e.message}`;
-                box.style.color = 'var(--red)';
+                clearInterval(timer);
+                bar.style.width = '100%';
+                bar.style.background = 'var(--red)';
+                respBox.innerHTML = `<i class="bi bi-clipboard copy-icon" onclick="copyModalResponse()"></i>❌ ${e.message}`;
             }
+        }
+
+        function copyModalURL() {
+            navigator.clipboard.writeText(document.getElementById('modalUrl').textContent).then(() => showToast('📋 URL Copied!'));
+        }
+
+        function copyModalResponse() {
+            const text = document.getElementById('modalResponse').innerText;
+            navigator.clipboard.writeText(text).then(() => showToast('📋 Response Copied!'));
         }
 
         // ============ TOAST ============
@@ -710,7 +728,7 @@
             return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
         }
 
-        document.getElementById('modal').addEventListener('click', function(e) {
+        document.getElementById('testerModal').addEventListener('click', function(e) {
             if (e.target === this) closeModal();
         });
 
@@ -718,7 +736,7 @@
             if (e.key === 'Escape') closeModal();
             if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
                 e.preventDefault();
-                document.getElementById('search').focus();
+                document.getElementById('searchInput').focus();
             }
         });
 
