@@ -1,28 +1,17 @@
 {
   "name": "ramzz-api",
-  "version": "1.0.0",
-  "description": "RAMZZ HOSTING REST API - Payment Gateway & Order Management",
+  "version": "2.0.0",
+  "description": "RAMZZ HOSTING REST API",
   "main": "src/app.js",
   "scripts": {
     "start": "node src/app.js",
-    "dev": "nodemon src/app.js",
-    "deploy": "vercel --prod"
+    "dev": "node src/app.js"
   },
-  "keywords": ["api", "payment", "qris", "pakasir"],
-  "author": "RamzzNotDev",
-  "license": "MIT",
   "dependencies": {
-    "axios": "^1.7.0",
-    "bcryptjs": "^2.4.3",
-    "chalk": "^5.3.0",
-    "cors": "^2.8.5",
-    "dotenv": "^16.4.0",
     "express": "^4.21.0",
-    "jsonwebtoken": "^9.0.2",
+    "cors": "^2.8.5",
+    "axios": "^1.7.0",
+    "dotenv": "^16.4.0",
     "uuid": "^10.0.0"
-  },
-  "devDependencies": {
-    "nodemon": "^3.1.0",
-    "vercel": "^37.0.0"
   }
 }
