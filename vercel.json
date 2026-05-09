@@ -11,15 +11,5 @@
       "src": "/(.*)",
       "dest": "src/app.js"
     }
-  ],
-  "env": {
-    "APIKEY": "@apikey",
-    "PAKASIR_API_KEY": "@pakasir-api-key",
-    "PAKASIR_PROJECT": "@pakasir-project",
-    "RESEND_API_KEY": "@resend-api-key",
-    "TELEGRAM_BOT_TOKEN": "@telegram-bot-token",
-    "TELEGRAM_CHAT_ID": "@telegram-chat-id",
-    "OWNER_EMAIL": "@owner-email",
-    "OWNER_WA": "@owner-wa"
-  }
+  ]
 }
