@@ -21,22 +21,15 @@ app.use(cors());
 // Request logger
 app.use((req, res, next) => {
   global.totalreq = (global.totalreq || 0) + 1;
-  
   const start = Date.now();
   res.on('finish', () => {
     const duration = Date.now() - start;
-    const statusColor = res.statusCode < 400 ? '#55efc4' : '#ff7675';
-    console.log(
-      chalk.hex('#dfe6e9')(`${req.method}`) + ' ' +
-      chalk.hex('#74b9ff')(`${req.path}`) + ' ' +
-      chalk.hex(statusColor)(`${res.statusCode}`) + ' ' +
-      chalk.hex('#b2bec3')(`${duration}ms`)
-    );
+    console.log(`${req.method} ${req.path} ${res.statusCode} ${duration}ms`);
   });
   next();
 });
 
-// API Key validation
+// API Key middleware
 const authMiddleware = require('./middleware/auth');
 app.use('/api', authMiddleware);
 
@@ -48,36 +41,8 @@ const settings = {
   creator: "RamzzNotDev",
   docs: "/endpoints",
   health: "/health",
-  site_url: process.env.SITE_URL || "https://ramzzhosting.com",
-  contact: {
-    email: process.env.OWNER_EMAIL || "admin@ramzzhosting.com",
-    whatsapp: process.env.OWNER_WA || "6281234567890"
-  }
+  site_url: process.env.SITE_URL || "https://ramzzhosting.com"
 };
-
-// ==================== GLOBAL JSON WRAPPER ====================
-app.use((req, res, next) => {
-  const originalJson = res.json;
-  res.json = function (data) {
-    if (
-      typeof data === 'object' &&
-      data !== null &&
-      !req.path.startsWith('/endpoints') &&
-      !req.path.startsWith('/health') &&
-      !req.path.startsWith('/docs')
-    ) {
-      return originalJson.call(this, {
-        ...data,
-        meta: {
-          timestamp: new Date().toISOString(),
-          api_version: settings.version
-        }
-      });
-    }
-    return originalJson.call(this, data);
-  };
-  next();
-});
 
 // ==================== STATIC ROUTES ====================
 app.get('/health', (req, res) => {
@@ -98,16 +63,14 @@ const apiFolder = path.join(__dirname, 'api');
 
 if (fs.existsSync(apiFolder)) {
   const files = fs.readdirSync(apiFolder);
-  
+
   files.forEach(file => {
     if (!file.endsWith('.js')) return;
-    
+
     const fullPath = path.join(apiFolder, file);
-    
+
     try {
-      // Clear require cache for hot reload in dev
       delete require.cache[require.resolve(fullPath)];
-      
       const routes = require(fullPath);
       const handlers = Array.isArray(routes) ? routes : [routes];
 
@@ -115,13 +78,11 @@ if (fs.existsSync(apiFolder)) {
         const { name, desc, category, path: routePath, run } = route;
 
         if (name && desc && category && routePath && typeof run === 'function') {
-          const cleanPath = routePath.split('?')[0]; // Remove query params
-          
-          // Register route
-          app.get(cleanPath, run);
-          app.post(cleanPath, run); // Support both GET & POST
+          const cleanPath = routePath.split('?')[0];
 
-          // Simpan metadata
+          app.get(cleanPath, run);
+          app.post(cleanPath, run);
+
           if (!rawEndpoints[category]) rawEndpoints[category] = [];
           rawEndpoints[category].push({
             name,
@@ -131,74 +92,53 @@ if (fs.existsSync(apiFolder)) {
           });
 
           totalRoutes++;
-          console.log(
-            chalk.hex('#55efc4')(`✔ Loaded: `) +
-            chalk.hex('#ffeaa7')(`${cleanPath}`) +
-            chalk.hex('#b2bec3')(` → ${name}`)
-          );
-        } else {
-          console.warn(
-            chalk.bgRed.white(` ⚠ Skipped invalid route in ${file}`)
-          );
+          console.log(chalk.green(`✔ Loaded: ${cleanPath} → ${name}`));
         }
       });
-
     } catch (err) {
-      console.error(
-        chalk.bgRed.white(` ❌ Error loading ${file}: ${err.message}`)
-      );
+      console.error(chalk.red(`❌ Error loading ${file}: ${err.message}`));
     }
   });
 }
 
 // ==================== ENDPOINTS LIST ====================
-const buildEndpoints = () => {
-  return Object.keys(rawEndpoints)
-    .sort((a, b) => a.localeCompare(b))
+app.get('/endpoints', (req, res) => {
+  const endpoints = Object.keys(rawEndpoints)
+    .sort()
     .reduce((sorted, category) => {
-      sorted[category] = rawEndpoints[category].sort(
-        (a, b) => a.name.localeCompare(b.name)
-      );
+      sorted[category] = rawEndpoints[category].sort((a, b) => a.name.localeCompare(b.name));
       return sorted;
     }, {});
-};
 
-app.get('/endpoints', (req, res) => {
   res.json({
     api: settings.name,
+    version: settings.version,
     total_endpoints: totalRoutes,
     total_categories: Object.keys(rawEndpoints).length,
-    categories: buildEndpoints()
+    categories: endpoints
   });
 });
 
 // ==================== HOMEPAGE ====================
 app.get('/', (req, res) => {
-  res.json({
-    message: `Welcome to ${settings.name}`,
-    version: settings.version,
-    endpoints: `${req.protocol}://${req.get('host')}/endpoints`,
-    health: `${req.protocol}://${req.get('host')}/health`,
-    docs: `${req.protocol}://${req.get('host')}/docs`
-  });
+  res.sendFile(path.join(__dirname, 'index.html'));
 });
 
-// ==================== 404 HANDLER ====================
+// ==================== 404 ====================
 app.use((req, res) => {
   res.status(404).json({
     error: true,
     message: `Route ${req.method} ${req.path} not found`,
-    hint: `Check available endpoints at /endpoints`
+    hint: 'Check /endpoints for available routes'
   });
 });
 
 // ==================== ERROR HANDLER ====================
 app.use((err, req, res, next) => {
-  console.error(chalk.red('Server Error:'), err.message);
+  console.error('Server Error:', err.message);
   res.status(500).json({
     error: true,
-    message: 'Internal Server Error',
-    detail: process.env.NODE_ENV === 'development' ? err.message : undefined
+    message: 'Internal Server Error'
   });
 });
 
@@ -206,14 +146,14 @@ app.use((err, req, res, next) => {
 if (process.env.NODE_ENV !== 'production' || !process.env.VERCEL) {
   app.listen(PORT, () => {
     console.log('');
-    console.log(chalk.hex('#fdcb6e')('╔══════════════════════════════════╗'));
-    console.log(chalk.hex('#fdcb6e')('║') + chalk.hex('#55efc4')(`  🚀 ${settings.name} v${settings.version}  `) + chalk.hex('#fdcb6e')('║'));
-    console.log(chalk.hex('#fdcb6e')('╚══════════════════════════════════╝'));
+    console.log(chalk.yellow('╔══════════════════════════════╗'));
+    console.log(chalk.yellow('║') + chalk.green(`  🚀 ${settings.name} v${settings.version}  `) + chalk.yellow('║'));
+    console.log(chalk.yellow('╚══════════════════════════════╝'));
     console.log('');
-    console.log(chalk.white(`📡 Server  : http://localhost:${PORT}`));
-    console.log(chalk.white(`📚 API Docs: http://localhost:${PORT}/endpoints`));
-    console.log(chalk.white(`❤️  Health  : http://localhost:${PORT}/health`));
-    console.log(chalk.white(`🔥 Routes  : ${totalRoutes} endpoints loaded`));
+    console.log(`📡 Server: http://localhost:${PORT}`);
+    console.log(`📚 Docs: http://localhost:${PORT}/endpoints`);
+    console.log(`❤️  Health: http://localhost:${PORT}/health`);
+    console.log(`🔥 Routes: ${totalRoutes} endpoints`);
     console.log('');
   });
 }
